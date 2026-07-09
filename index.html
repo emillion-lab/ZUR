@@ -1129,11 +1129,11 @@ body.map-fullscreen #next90-btn { display:none; }
 <body>
 <div class="header">
   <div>
-    <h1>📍 SOFIA TAXI DEMAND</h1>
-    <p>Реална карта · GPS навигация</p>
+    <h1>📍 ZÜRICH TAXI DEMAND</h1>
+    <p>Live map · GPS navigation</p>
   </div>
   <div class="hdr-right">
-    <span id="airport-badge">✈ ЗАРЕЖДА…</span>
+    <span id="airport-badge">✈ LOADING…</span>
     <div class="live-dot"></div>
   </div>
 </div>
@@ -1142,7 +1142,7 @@ body.map-fullscreen #next90-btn { display:none; }
 <div id="weather-bar">
   <span class="wb-icon" id="wb-icon">🌤</span>
   <span class="wb-temp" id="wb-temp">—°C</span>
-  <span class="wb-desc" id="wb-desc">Зарежда времето…</span>
+  <span class="wb-desc" id="wb-desc">Loading weather…</span>
   <span class="wb-boost" id="wb-boost"></span>
 </div>
 
@@ -1150,7 +1150,7 @@ body.map-fullscreen #next90-btn { display:none; }
   <div class="tl-top">
     <span class="tl-clock" id="time-display">16:00</span>
     <span class="tl-sub"   id="tl-hint">—</span>
-    <span class="tl-dead"  id="tl-dead">⚠ МЪРТВА ЗОНА</span>
+    <span class="tl-dead"  id="tl-dead">⚠ DEAD ZONE</span>
   </div>
   <canvas id="demand-canvas"></canvas>
   <div class="tl-slider-wrap">
@@ -1169,10 +1169,10 @@ body.map-fullscreen #next90-btn { display:none; }
 <!-- Zone sidebar list -->
 <div id="zone-sidebar">
   <div class="sidebar-title" style="display:flex;justify-content:space-between;align-items:center">
-    <span>▣ Зони по приоритет</span>
+    <span>▣ Zones by priority</span>
     <button id="toggle-map-btn" onclick="toggleMapView()"
       style="background:var(--cyan);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0">
-      📋 Списък
+      📋 List
     </button>
   </div>
   <div id="zone-list"></div>
@@ -1180,7 +1180,7 @@ body.map-fullscreen #next90-btn { display:none; }
 
 <!-- КАРЪК sidebar -->
 <div id="karyk-sidebar">
-  <div class="sidebar-title">🥉 КАРЪК ЗОНИ — само за бронзови</div>
+  <div class="sidebar-title">🥉 KARYK ZONES — slow-hour picks</div>
   <div id="karyk-list"></div>
 </div>
 
@@ -1211,15 +1211,15 @@ body.map-fullscreen #next90-btn { display:none; }
     <span class="dh-close" onclick="closeDirHint()">✕</span>
   </div>
 </div>
-<button id="next90-btn" title="Следващи 90 минути">⏱</button>
-<button id="gps-btn" title="GPS локация">📍</button>
-<button id="bakshish-btn" title="Бакшиш радар">🎩</button>
+<button id="next90-btn" title="Next 90 minutes">⏱</button>
+<button id="gps-btn" title="GPS location">📍</button>
+<button id="bakshish-btn" title="Tip radar">🎩</button>
 
 <!-- Next 90 min panel -->
 <!-- БАКШИШ ПАНЕЛ -->
 <div id="bakshish-panel">
   <div class="bp-header">
-    🎩 БАКШИШ РАДАР
+    🎩 TIP RADAR
     <span class="bp-shift" id="bp-shift-label">—</span>
     <span class="bp-close" onclick="closeBakshish()">✕</span>
   </div>
@@ -1232,17 +1232,17 @@ body.map-fullscreen #next90-btn { display:none; }
 
 <div id="next90-panel">
   <div class="n90-header">
-    ⏱ СЛЕДВАЩИ 90 МИНУТИ
+    ⏱ NEXT 90 MINUTES
     <span class="n90-close" onclick="closeNext90()">✕</span>
   </div>
   <div id="next90-list"></div>
 </div>
-<button id="karyk-btn" title="Карък Mode — бронзов партньор, тихи зони">🥉<br>К<br>А<br>Р<br>Ъ<br>К</button>
+<button id="karyk-btn" title="Karyk Mode — quiet-zone strategy">🥉<br>K<br>A<br>R<br>Y<br>K</button>
 <div id="karyk-banner">
-  <div class="kb-title">🥉 КАРЪК MODE — Бронзов партньор, умни ходове</div>
-  <div class="kb-hint" id="karyk-hint">Анализирам тихи зони…</div>
+  <div class="kb-title">🥉 KARYK MODE — smart moves for slow hours</div>
+  <div class="kb-hint" id="karyk-hint">Scanning quiet zones…</div>
 </div>
-<button id="fs-btn"  title="Fullscreen карта">⛶</button>
+<button id="fs-btn"  title="Fullscreen map">⛶</button>
 
 </div>
 
@@ -1250,7 +1250,7 @@ body.map-fullscreen #next90-btn { display:none; }
 <div id="nav-panel">
   <div class="nav-row">
     <div>
-      <div class="nav-title">🧭 НАВИГАЦИЯ КЪМ</div>
+      <div class="nav-title">🧭 NAVIGATE TO</div>
       <div class="nav-target" id="nav-target">—</div>
       <div class="nav-distance" id="nav-dist">—</div>
     </div>
@@ -1259,7 +1259,7 @@ body.map-fullscreen #next90-btn { display:none; }
   </div>
   <div class="nav-row">
     <div id="nav-compass" style="font-size:32px">⬆️</div>
-    <div class="nav-hint" id="nav-hint">Изчакване на GPS…</div>
+    <div class="nav-hint" id="nav-hint">Waiting for GPS…</div>
   </div>
 </div>
 <script src="leaflet.min.js"></script>
@@ -1270,13 +1270,13 @@ body.map-fullscreen #next90-btn { display:none; }
   <div style="display:flex;align-items:center;gap:10px">
     <span style="font-size:24px">🚕</span>
     <div>
-      <div style="font-size:13px;font-weight:900;color:#fff">Инсталирай ZUR Radar</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.8)">Работи офлайн · Бърз достъп</div>
+      <div style="font-size:13px;font-weight:900;color:#fff">Install ZUR Radar</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.8)">Works offline · Quick access</div>
     </div>
   </div>
   <div style="display:flex;gap:7px">
-    <button onclick="document.getElementById('pwa-banner').style.display='none';localStorage.setItem('pwa-bak-no','1')" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:7px;padding:6px 11px;font-size:12px;color:#fff;cursor:pointer">Не сега</button>
-    <button id="pwa-bak-btn" style="background:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:13px;font-weight:900;color:#0284c7;cursor:pointer">Инсталирай ↓</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none';localStorage.setItem('pwa-bak-no','1')" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:7px;padding:6px 11px;font-size:12px;color:#fff;cursor:pointer">Not now</button>
+    <button id="pwa-bak-btn" style="background:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:13px;font-weight:900;color:#0284c7;cursor:pointer">Install ↓</button>
   </div>
 </div>
 <script>
@@ -1295,9 +1295,9 @@ body.map-fullscreen #next90-btn { display:none; }
   if(iOS&&!window.navigator.standalone){
     setTimeout(function(){
       document.getElementById('pwa-banner').style.display='flex';
-      document.getElementById('pwa-bak-btn').textContent='Как?';
+      document.getElementById('pwa-bak-btn').textContent='How?';
       document.getElementById('pwa-bak-btn').onclick=function(){
-        alert('Safari: Сподели (□↑) → Добави към началния екран → Добави');
+        alert('Safari: Share (□↑) → Add to Home Screen → Add');
       };
     },2500);
   }
