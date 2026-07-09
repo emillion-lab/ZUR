@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 if (typeof L === 'undefined') {
   document.getElementById('map').innerHTML =
-    '<div style="color:#ef4444;padding:20px;font-family:monospace">Leaflet не се зареди.</div>';
+    '<div style="color:#ef4444;padding:20px;font-family:monospace">Leaflet failed to load.</div>';
   return;
 }
 
@@ -37,27 +37,27 @@ const ZONES = [
   { id:"stadelhofen",  name:"Bahnhof Stadelhofen",                 icon:"🚉", lat:47.3664, lng:8.5484, radius:250, type:"transit",  wazeName:"Stadelhofen" },
   { id:"enge_bhf",     name:"Bahnhof Enge",                        icon:"🚉", lat:47.3641, lng:8.5312, radius:240, type:"transit",  wazeName:"Bahnhof Enge" },
   { id:"paradeplatz",  name:"Paradeplatz / Bahnhofstrasse",        icon:"🏦", lat:47.3699, lng:8.5390, radius:300, type:"office",   wazeName:"Paradeplatz Zurich" },
-  { id:"cityring",     name:"City / Bürkliplatz (езерото)",        icon:"🏢", lat:47.3665, lng:8.5410, radius:300, type:"office",   wazeName:"Burkliplatz" },
+  { id:"cityring",     name:"City / Bürkliplatz (lake)",        icon:"🏢", lat:47.3665, lng:8.5410, radius:300, type:"office",   wazeName:"Burkliplatz" },
   { id:"zurich_west",  name:"Zürich West / Prime Tower",           icon:"🏢", lat:47.3861, lng:8.5170, radius:380, type:"office",   wazeName:"Prime Tower Zurich" },
-  { id:"opfikon_gl",   name:"Glattpark / The Circle офиси",        icon:"🏢", lat:47.4310, lng:8.5610, radius:380, type:"office",   wazeName:"The Circle Zurich Airport" },
-  { id:"oerlikon_of",  name:"Oerlikon офиси (ABB/Google)",         icon:"🏢", lat:47.4090, lng:8.5380, radius:340, type:"office",   wazeName:"Oerlikon Zurich" },
+  { id:"opfikon_gl",   name:"Glattpark / The Circle offices",        icon:"🏢", lat:47.4310, lng:8.5610, radius:380, type:"office",   wazeName:"The Circle Zurich Airport" },
+  { id:"oerlikon_of",  name:"Oerlikon offices (ABB/Google)",         icon:"🏢", lat:47.4090, lng:8.5380, radius:340, type:"office",   wazeName:"Oerlikon Zurich" },
   { id:"glatt",        name:"Glattzentrum",                        icon:"🛍", lat:47.4104, lng:8.5940, radius:320, type:"mall",     wazeName:"Glattzentrum Wallisellen" },
   { id:"sihlcity",     name:"Sihlcity",                            icon:"🛍", lat:47.3595, lng:8.5253, radius:280, type:"mall",     wazeName:"Sihlcity Zurich" },
   { id:"letzipark",    name:"Letzipark",                           icon:"🛍", lat:47.3877, lng:8.4996, radius:260, type:"mall",     wazeName:"Letzipark Zurich" },
-  { id:"hotels_ctr",   name:"Хотели Център (Baur au Lac/Savoy)",   icon:"🏨", lat:47.3690, lng:8.5395, radius:300, type:"hotel",    wazeName:"Baur au Lac Zurich" },
-  { id:"hotels_apt",   name:"Хотели летище (Hyatt/Radisson)",      icon:"🏨", lat:47.4520, lng:8.5710, radius:350, type:"hotel",    wazeName:"Radisson Blu Zurich Airport" },
-  { id:"langstrasse",  name:"Langstrasse (нощен живот)",           icon:"🍸", lat:47.3785, lng:8.5290, radius:320, type:"nightlife",wazeName:"Langstrasse Zurich" },
-  { id:"niederdorf",   name:"Niederdorf / Old Town барове",        icon:"🍸", lat:47.3730, lng:8.5440, radius:260, type:"nightlife",wazeName:"Niederdorf Zurich" },
-  { id:"zw_clubs",     name:"Zürich West клубове (Hive/Escherwyss)",icon:"🍸",lat:47.3900, lng:8.5150, radius:300, type:"nightlife",wazeName:"Escher Wyss Platz" },
+  { id:"hotels_ctr",   name:"Hotels City (Baur au Lac/Savoy)",   icon:"🏨", lat:47.3690, lng:8.5395, radius:300, type:"hotel",    wazeName:"Baur au Lac Zurich" },
+  { id:"hotels_apt",   name:"Hotels Airport (Hyatt/Radisson)",      icon:"🏨", lat:47.4520, lng:8.5710, radius:350, type:"hotel",    wazeName:"Radisson Blu Zurich Airport" },
+  { id:"langstrasse",  name:"Langstrasse (nightlife)",           icon:"🍸", lat:47.3785, lng:8.5290, radius:320, type:"nightlife",wazeName:"Langstrasse Zurich" },
+  { id:"niederdorf",   name:"Niederdorf / Old Town bars",        icon:"🍸", lat:47.3730, lng:8.5440, radius:260, type:"nightlife",wazeName:"Niederdorf Zurich" },
+  { id:"zw_clubs",     name:"Zürich West clubs (Hive/Escherwyss)",icon:"🍸",lat:47.3900, lng:8.5150, radius:300, type:"nightlife",wazeName:"Escher Wyss Platz" },
   { id:"hallenstadion",name:"Hallenstadion / Messe Oerlikon",      icon:"🎤", lat:47.4111, lng:8.5517, radius:380, type:"venue",    wazeName:"Hallenstadion Zurich" },
   { id:"letzigrund",   name:"Letzigrund Stadion",                  icon:"🏟", lat:47.3826, lng:8.5039, radius:360, type:"venue",    wazeName:"Letzigrund" },
   { id:"usz",          name:"UniversitätsSpital (USZ)",            icon:"🏥", lat:47.3768, lng:8.5510, radius:280, type:"hospital", wazeName:"Universitatsspital Zurich" },
   { id:"triemli",      name:"Stadtspital Triemli",                 icon:"🏥", lat:47.3670, lng:8.4970, radius:280, type:"hospital", wazeName:"Triemli Spital" },
   { id:"waid",         name:"Stadtspital Waid",                    icon:"🏥", lat:47.3990, lng:8.5210, radius:240, type:"hospital", wazeName:"Waid Spital" },
   { id:"uni_eth",      name:"ETH / Universität Zürich",            icon:"🎓", lat:47.3763, lng:8.5480, radius:300, type:"university",wazeName:"ETH Zurich" },
-  { id:"irchel",       name:"Uni Irchel / студентски",             icon:"🎓", lat:47.3974, lng:8.5482, radius:280, type:"university",wazeName:"Irchel Zurich" },
-  { id:"seefeld",      name:"Seefeld (жилищен лукс)",              icon:"🏘", lat:47.3600, lng:8.5560, radius:340, type:"residential_lux", wazeName:"Seefeld Zurich" },
-  { id:"altstetten",   name:"Altstetten (жилищен)",                icon:"🏘", lat:47.3890, lng:8.4850, radius:380, type:"residential", wazeName:"Altstetten" },
+  { id:"irchel",       name:"Uni Irchel / students",             icon:"🎓", lat:47.3974, lng:8.5482, radius:280, type:"university",wazeName:"Irchel Zurich" },
+  { id:"seefeld",      name:"Seefeld (upscale residential)",              icon:"🏘", lat:47.3600, lng:8.5560, radius:340, type:"residential_lux", wazeName:"Seefeld Zurich" },
+  { id:"altstetten",   name:"Altstetten (residential)",                icon:"🏘", lat:47.3890, lng:8.4850, radius:380, type:"residential", wazeName:"Altstetten" },
 ];
 
 // ═══════════════════════════════════════════════
@@ -79,13 +79,13 @@ const BASE = {
 // EVENTS
 // ═══════════════════════════════════════════════
 const EVENTS = [
-  { zone:"paradeplatz",  name:"Банки/офиси – изход",        endHour:17.5, boost:2.6, repeat:"mon-fri" },
-  { zone:"zurich_west",  name:"Zürich West – изход",        endHour:18.0, boost:2.4, repeat:"mon-fri" },
-  { zone:"opfikon_gl",   name:"The Circle – изход",         endHour:17.5, boost:2.2, repeat:"mon-fri" },
-  { zone:"langstrasse",  name:"Затваряне на баровете",      endHour:2.0,  boost:3.0, repeat:"fri-sat" },
-  { zone:"zw_clubs",     name:"Клубове – затваряне",        endHour:4.0,  boost:3.2, repeat:"fri-sat" },
-  { zone:"hallenstadion",name:"Събитие Hallenstadion (демо)",endHour:22.5, boost:3.5, repeat:"sat" },
-  { zone:"hb",           name:"Последни влакове",           endHour:0.5,  boost:2.4, repeat:"daily" },
+  { zone:"paradeplatz",  name:"Banks/offices — out",        endHour:17.5, boost:2.6, repeat:"mon-fri" },
+  { zone:"zurich_west",  name:"Zürich West — out",        endHour:18.0, boost:2.4, repeat:"mon-fri" },
+  { zone:"opfikon_gl",   name:"The Circle — out",         endHour:17.5, boost:2.2, repeat:"mon-fri" },
+  { zone:"langstrasse",  name:"Bars closing",      endHour:2.0,  boost:3.0, repeat:"fri-sat" },
+  { zone:"zw_clubs",     name:"Clubs closing",        endHour:4.0,  boost:3.2, repeat:"fri-sat" },
+  { zone:"hallenstadion",name:"Hallenstadion event (demo)",endHour:22.5, boost:3.5, repeat:"sat" },
+  { zone:"hb",           name:"Last trains",           endHour:0.5,  boost:2.4, repeat:"daily" },
 ];
 
 // ═══════════════════════════════════════════════
@@ -93,24 +93,24 @@ const EVENTS = [
 // ═══════════════════════════════════════════════
 function demandColor(score, type) {
   if (type === 'hospital')
-    return score>=2.0 ? {fill:"#ff2020",fillAlpha:0.75,stroke:"#ff6060",label:"🏥 Активно"}
+    return score>=2.0 ? {fill:"#ff2020",fillAlpha:0.75,stroke:"#ff6060",label:"🏥 Active"}
          : score>=1.3 ? {fill:"#ef4444",fillAlpha:0.60,stroke:"#ff5555",label:"🏥"}
          :              {fill:"#991b1b",fillAlpha:0.40,stroke:"#cc3333",label:"🏥"};
   if (type === 'karyk')
     return {fill:"#f97316",fillAlpha:0.0,stroke:"transparent",label:"🥉"};
-  if (score>=3.2) return {fill:"#ef4444",fillAlpha:0.55,stroke:"#ff7777",label:"ПИК 🔥"};
-  if (score>=2.4) return {fill:"#f97316",fillAlpha:0.50,stroke:"#ffaa55",label:"Висок ▲"};
-  if (score>=1.6) return {fill:"#f59e0b",fillAlpha:0.45,stroke:"#ffd060",label:"Среден"};
-  if (score>=0.8) return {fill:"#22c55e",fillAlpha:0.35,stroke:"#55ee88",label:"Нормален"};
-  return               {fill:"#1a3050",fillAlpha:0.20,stroke:"#2a4870",label:"Тих"};
+  if (score>=3.2) return {fill:"#ef4444",fillAlpha:0.55,stroke:"#ff7777",label:"PEAK 🔥"};
+  if (score>=2.4) return {fill:"#f97316",fillAlpha:0.50,stroke:"#ffaa55",label:"High ▲"};
+  if (score>=1.6) return {fill:"#f59e0b",fillAlpha:0.45,stroke:"#ffd060",label:"Medium"};
+  if (score>=0.8) return {fill:"#22c55e",fillAlpha:0.35,stroke:"#55ee88",label:"Normal"};
+  return               {fill:"#1a3050",fillAlpha:0.20,stroke:"#2a4870",label:"Quiet"};
 }
 
 function karykColor(ks) {
-  if (ks>=4.0) return {fill:"#ff6b00",stroke:"#ff9040",label:"🔥 Карък ПИК"};
-  if (ks>=3.0) return {fill:"#f97316",stroke:"#ffaa55",label:"▲ Отлично"};
-  if (ks>=2.0) return {fill:"#fbbf24",stroke:"#ffd060",label:"Добро"};
-  if (ks>=1.0) return {fill:"#a3a300",stroke:"#d4d400",label:"Слабо"};
-  return              {fill:"#1a1030",stroke:"#2a2050",label:"Избягвай"};
+  if (ks>=4.0) return {fill:"#ff6b00",stroke:"#ff9040",label:"🔥 Karyk PEAK"};
+  if (ks>=3.0) return {fill:"#f97316",stroke:"#ffaa55",label:"▲ Excellent"};
+  if (ks>=2.0) return {fill:"#fbbf24",stroke:"#ffd060",label:"Good"};
+  if (ks>=1.0) return {fill:"#a3a300",stroke:"#d4d400",label:"Low"};
+  return              {fill:"#1a1030",stroke:"#2a2050",label:"Avoid"};
 }
 
 function fmtHour(h) {
@@ -320,7 +320,7 @@ function buildNext90(){
   const list=document.getElementById('next90-list');
   if(!list) return;
   if(!upcoming.length){
-    list.innerHTML='<div style="padding:14px;color:var(--muted);font-size:15px">Няма значими events в следващите 90 мин</div>';
+    list.innerHTML='<div style="padding:14px;color:var(--muted);font-size:15px">No major events in the next 90 min</div>';
     return;
   }
   list.innerHTML=upcoming.map(ev=>{
@@ -332,7 +332,7 @@ function buildNext90(){
       <div class="n90-icon">${z.icon}</div>
       <div class="n90-info">
         <div class="n90-name">${ev.name}</div>
-        <div class="n90-zone">${z.name.split('(')[0].trim()} · след ${min} мин</div>
+        <div class="n90-zone">${z.name.split('(')[0].trim()} · in ${min} min</div>
       </div>
       <div class="n90-score" style="color:${c.fill}">+${ev.boost.toFixed(1)}</div>
     </div>`;
@@ -450,37 +450,37 @@ function showTransitPopup(zid){
   if(zid === 'cab_north'){
     const arrivals = getSofiaArrivals(12);
     if(arrivals.length){
-      html += '<div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">🚌 ПРИСТИГАЩИ НА ЦЕНТРАЛНА АВТОГАРА</div>';
+      html += '<div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">🚌 ARRIVALS AT ZÜRICH HB</div>';
       arrivals.forEach(b=>{
-        const untilArr = b.arrMin - b.nowMin; // минути до пристигане
+        const untilArr = b.arrMin - b.nowMin; // minути до пристигане
         const isSoon = untilArr>=-5 && untilArr<=40;
         const bg = isSoon?'rgba(239,68,68,.1)':'transparent';
         const col = untilArr<=0?'var(--muted)':untilArr<=40?'#ef4444':untilArr<=90?'var(--amber)':'var(--muted)';
-        const label = untilArr<=0?`пристигнал ~${b.arrTime}`:
-                      untilArr<=90?`~${b.arrTime} · след ${untilArr} мин`:
+        const label = untilArr<=0?`arrived ~${b.arrTime}`:
+                      untilArr<=90?`~${b.arrTime} · in ${untilArr} min`:
                       `~${b.arrTime}`;
-        const origin = b.route.name.replace(' → София','');
+        const origin = b.route.name.replace(' → Zürich','');
         html += `<div style="padding:6px 8px;border-radius:7px;background:${bg};margin-bottom:3px;display:flex;justify-content:space-between;gap:8px">
           <span style="font-weight:800;color:var(--text)">${origin} <span style="font-weight:400;color:var(--muted);font-size:11px">(${b.dep}${b.route.approx?' ≈':''})</span></span>
           <span style="font-size:12px;color:${col};text-align:right;white-space:nowrap">${label}</span>
         </div>`;
       });
     } else {
-      html += '<div style="color:var(--muted);padding:8px">Няма пристигащи в следващите часове / зареждане…</div>';
+      html += '<div style="color:var(--muted);padding:8px">No arrivals in the coming hours / loading…</div>';
     }
-    html += '<div style="font-size:11px;color:var(--muted);margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">≈ разписание по модел на превозвача (Пловдив — точно). Сортирано по час на пристигане.</div>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">≈ schedule model per operator. Sorted by arrival time.</div>';
   }
 
   // Expo Center bus stop
   if(zid === 'iec' || zid === 'expo2000'){
-    // Автобуси по Тракия, минаващи през Expo/Цариградско, по route stops offset
+    // Автобуси по Тракия, minаващи през Expo/Цариградско, по route stops offset
     const data = busSchedule;
     const now = new Date();
     const nowMin = now.getHours()*60 + now.getMinutes();
     const rows = [];
     for(const route of (data?.routes||[])){
       const expo = (route.stops||[]).find(s=>s.name.includes('Expo'));
-      if(!expo || !route.to || !route.to.includes('Централна автогара София')) continue;
+      if(!expo || !route.to || !route.to.includes('Zürich HB')) continue;
       for(const dep of route.departures){
         const [h,m] = dep.split(':').map(Number);
         const atExpo = h*60+m+(expo.offset_min||0);
@@ -492,10 +492,10 @@ function showTransitPopup(zid){
     }
     rows.sort((a,b)=>a.atExpo-b.atExpo);
     if(rows.length){
-      html += '<div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">🚌 Минаващи през Expo/Цариградско</div>';
+      html += '<div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">🚌 Passing corridors</div>';
       rows.slice(0,6).forEach(b=>{
         const t = `${String(Math.floor((b.atExpo%1440)/60)).padStart(2,'0')}:${String(b.atExpo%60).padStart(2,'0')}`;
-        const origin = (b.route.name||'').replace(' → София','');
+        const origin = (b.route.name||'').replace(' → Zürich','');
         const col = b.delta<40?'#ef4444':'var(--amber)';
         html += `<div style="padding:6px 8px;border-radius:7px;margin-bottom:3px;display:flex;justify-content:space-between">
           <span>${origin} <span style="color:var(--muted);font-size:11px">${b.dep}${b.route.approx?' ≈':''}</span></span>
@@ -507,7 +507,7 @@ function showTransitPopup(zid){
 
   // Generic transit info
   if(!['cab_north','iec','expo2000'].includes(zid)){
-    html += '<div style="color:var(--muted);padding:8px 0">Зона за транспортен хъб. Очаквайте разписания.</div>';
+    html += '<div style="color:var(--muted);padding:8px 0">Transit hub zone. Schedules coming.</div>';
   }
 
   html += '</div>';
@@ -549,7 +549,7 @@ function showAirportSchedule() {
   const cacheIsOld = upcoming.length === 0 && past.length > 0;
 
   let html='<div style="font-size:14px">';
-  html+='<div style="font-weight:800;font-size:15px;margin-bottom:10px;color:var(--cyan)">✈️ Излизане на пасажери — СОФ</div>';
+  html+='<div style="font-weight:800;font-size:15px;margin-bottom:10px;color:var(--cyan)">✈️ Passenger exits — ZRH</div>';
 
   // Find truly next flights even if none "upcoming" now
   const allSorted = [...flightDetails].sort((a,b)=>(a.exitFromH*60+a.exitFromM)-(b.exitFromH*60+b.exitFromM));
@@ -563,26 +563,26 @@ function showAirportSchedule() {
     if(cacheIsOld){
       // Cache is from yesterday - show today's expected pattern
       html+=`<div style="background:rgba(245,197,24,.1);border:1px solid var(--amber);border-radius:10px;padding:12px;text-align:center;margin-bottom:10px">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">⚠️ Кешът се обновява в 08:00, 13:00, 18:00</div>
-        <div style="font-size:13px;color:var(--amber)">Показват се типичните пристигания</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">⚠️ Cache refreshes at 08:00, 13:00, 18:00</div>
+        <div style="font-size:13px;color:var(--amber)">Showing the typical arrival pattern</div>
       </div>`;
     } else if(next){
       html+=`<div style="background:rgba(2,132,199,.1);border:1px solid var(--cyan);border-radius:10px;padding:14px;text-align:center;margin-bottom:10px">
-        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Няма излизащи пасажери в момента</div>
-        <div style="font-size:18px;font-weight:900;color:var(--cyan)">Следващ: ${String(next.exitFromH).padStart(2,'0')}:${String(next.exitFromM).padStart(2,'0')}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">No passengers exiting right now</div>
+        <div style="font-size:18px;font-weight:900;color:var(--cyan)">Next: ${String(next.exitFromH).padStart(2,'0')}:${String(next.exitFromM).padStart(2,'0')}</div>
         <div style="font-size:13px;color:var(--muted);margin-top:3px">${next.fn} от ${(next.depAirport||'').slice(0,20)} ${next.nonSchengen?'🛂':'🇪🇺'}</div>
       </div>`;
     } else if(past.length===0){
       if(airportStatus==='fallback'){
-        html+='<div style="color:#f59e0b;padding:10px 0;text-align:center;font-size:12px">⚠️ Няма живи полетни данни — прогнозен режим'+(window.__flErr?('<br><span style="color:#888;font-size:10px;word-break:break-all">debug: '+window.__flErr+'</span>'):'')+'</div>';
+        html+='<div style="color:#f59e0b;padding:10px 0;text-align:center;font-size:12px">⚠️ No live flight data — forecast mode'+(window.__flErr?('<br><span style="color:#888;font-size:10px;word-break:break-all">debug: '+window.__flErr+'</span>'):'')+'</div>';
       } else {
-        html+='<div style="color:var(--muted);padding:16px 0;text-align:center">Зареждане на полети…</div>';
+        html+='<div style="color:var(--muted);padding:16px 0;text-align:center">Loading flights…</div>';
       }
     }
   }
 
   if(upcoming.length){
-    html+='<div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;margin-bottom:6px">ПРЕДСТОЯЩИ / СЕГА</div>';
+    html+='<div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;margin-bottom:6px">UPCOMING / NOW</div>';
     upcoming.slice(0,12).forEach(f=>{
       const fromMin = f.exitFromH*60+f.exitFromM;
       const toMin   = f.exitToH*60+f.exitToM;
@@ -605,7 +605,7 @@ function showAirportSchedule() {
 
   if(past.length){
     const shown = past.slice(-4);
-    html+=`<div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;margin:10px 0 6px">ВЕЧЕ ИЗЛЕЗЛИ (последни ${shown.length})</div>`;
+    html+=`<div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;margin:10px 0 6px">ALREADY OUT (last ${shown.length})</div>`;
     shown.forEach(f=>{
       html+=`<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;opacity:.45;font-size:12px">
         <span style="min-width:44px;font-weight:700">${f.fn}</span>
@@ -616,7 +616,7 @@ function showAirportSchedule() {
     });
   }
 
-  html+='<div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">🇪🇺 Шенген +15–25 мин &nbsp;|&nbsp; 🛂 Извън Шенген +25–35 мин</div>';
+  html+='<div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">🇪🇺 Schengen +15–25 min &nbsp;|&nbsp; 🛂 Non-Schengen +25–35 min</div>';
   html+='</div>';
 
   const airportZone=ZONES.find(z=>z.id==='airport');
@@ -644,14 +644,14 @@ function showZonePopup(zid) {
   if (isTraffic&&ti) {
     const active=s>=1.5;
     const sc=active?'#ef4444':'#22c55e';
-    evHtml=`<div style="background:${active?'#1a0808':'#081a0d'};border:1px solid ${sc};border-radius:5px;padding:5px 8px;margin-bottom:5px;color:${sc};font-size:15px;font-weight:600">${active?'🔴 ЗАДРЪСТЕНО СЕГА':'🟢 В МОМЕНТА СВОБОДНО'}</div>
+    evHtml=`<div style="background:${active?'#1a0808':'#081a0d'};border:1px solid ${sc};border-radius:5px;padding:5px 8px;margin-bottom:5px;color:${sc};font-size:15px;font-weight:600">${active?'🔴 JAMMED NOW':'🟢 CLEAR RIGHT NOW'}</div>
       <div style="font-size:15px;color:#a855f7;margin-bottom:3px">🚦 ${ti.jamDir}</div>
-      <div style="font-size:15px;color:#00e5ff;margin-bottom:5px">✅ Свободно: ${ti.freeDir}</div>
-      ${active?`<div style="background:#1a0a2e;border:1px solid #a855f7;border-radius:5px;padding:5px 8px;font-size:15px;color:#d08dff;margin-bottom:4px">💡 Карай ${ti.freeArrow} обратно — стигаш по-бързо!</div>`:''}
-      <div style="font-size:14px;color:#4a6080">⏰ Пик: ${ti.time}</div>`;
+      <div style="font-size:15px;color:#00e5ff;margin-bottom:5px">✅ Clear: ${ti.freeDir}</div>
+      ${active?`<div style="background:#1a0a2e;border:1px solid #a855f7;border-radius:5px;padding:5px 8px;font-size:15px;color:#d08dff;margin-bottom:4px">💡 Drive ${ti.freeArrow} the other way — you'll get there faster!</div>`:''}
+      <div style="font-size:14px;color:#4a6080">⏰ Peak: ${ti.time}</div>`;
   } else {
     const evs=(activeEvents[zid]||[]).slice(0,3);
-    evHtml=evs.length?evs.map(e=>`<div>• ${e.name}</div>`).join(''):'<div style="color:#4a6080">Базово търсене</div>';
+    evHtml=evs.length?evs.map(e=>`<div>• ${e.name}</div>`).join(''):'<div style="color:#4a6080">Baseline demand</div>';
   }
   const pct=Math.min(100,(s/4.5)*100);
   L.popup({maxWidth:240}).setLatLng([z.lat,z.lng]).setContent(`
@@ -659,7 +659,7 @@ function showZonePopup(zid) {
     <div style="font-size:18px;font-weight:bold;color:${c.fill};margin-bottom:4px">${s.toFixed(1)} <span style="font-size:15px">${label}</span></div>
     <div style="height:4px;background:#182d47;border-radius:2px;margin:5px 0"><div style="width:${pct}%;height:100%;background:${c.fill};border-radius:2px"></div></div>
     <div style="font-size:15px;color:#c8daf0;margin:6px 0">${evHtml}</div>
-    ${!isTraffic?`<button onclick="startNav('${zid}')" style="width:100%;background:#00e5ff;color:#000;border:none;border-radius:4px;padding:5px;font-size:15px;cursor:pointer;margin-top:4px">🧭 Навигирай</button>
+    ${!isTraffic?`<button onclick="startNav('${zid}')" style="width:100%;background:#00e5ff;color:#000;border:none;border-radius:4px;padding:5px;font-size:15px;cursor:pointer;margin-top:4px">🧭 Navigate</button>
     <div style="display:flex;gap:5px;margin-top:5px">
       <a href="https://waze.com/ul?q=${encodeURIComponent(z.wazeName||z.name)}&navigate=yes" target="_blank"
          style="flex:1;text-align:center;font-size:14px;color:#00e5ff;padding:4px;background:#0d1929;border:1px solid #182d47;border-radius:4px;text-decoration:none">🚗 Waze</a>
@@ -745,7 +745,7 @@ function render(hour) {
   const top=sorted[0];
   const tz=ZONES.find(z=>z.id===top[0]);
   document.getElementById('tl-hint').textContent=
-    dead?'— мъртва зона, почини':`Топ: ${tz?.icon||''} ${tz?.name||top[0]} (${top[1].toFixed(1)})`;
+    dead?'— dead zone, take a break':`Top: ${tz?.icon||''} ${tz?.name||top[0]} (${top[1].toFixed(1)})`;
   const zList=document.getElementById('zone-list');
   if (zList && !karykMode) {
     zList.innerHTML=sorted
@@ -776,7 +776,7 @@ function render(hour) {
       .sort((a,b)=>b.ks-a.ks).slice(0,20);
     kList.innerHTML=ranked.map(({z,ks,ev},i)=>{
       const c=karykColor(ks);
-      const reason=ev||(z.type==='karyk'?'Тих квартал':z.type==='residential_lux'?'Луксозен жк':'');
+      const reason=ev||(z.type==='karyk'?'Quiet district':z.type==='residential_lux'?'Upscale district':'');
       return `<div class="karyk-item" onclick="(function(){if(document.body.classList.contains('list-view'))toggleMapView();setTimeout(function(){map.invalidateSize();map.setView([${z.lat},${z.lng}],15);showZonePopup('${z.id}');},200);})()">
         <div class="karyk-rank" style="color:${c.fill}">#${i+1}</div>
         <div class="karyk-dot" style="background:${c.fill}"></div>
@@ -809,7 +809,7 @@ function bearing(lat1,lng1,lat2,lng2){
   return (Math.atan2(y,x)*180/Math.PI+360)%360;
 }
 const ARROWS=['⬆️','↗️','➡️','↘️','⬇️','↙️','⬅️','↖️'];
-const DIRS  =['С','СИ','И','ЮИ','Ю','ЮЗ','З','СЗ'];
+const DIRS  =['N','NE','E','SE','S','SW','W','NW'];
 
 if(window.DeviceOrientationEvent){
   window.addEventListener('deviceorientationabsolute',e=>{deviceHeading=e.alpha;},true);
@@ -836,7 +836,7 @@ function updateDirectionHint(scores) {
   let relBear=bear;
   if(deviceHeading!==null) relBear=(bear-deviceHeading+360)%360;
   const c=demandColor(bs,best.type);
-  const distTxt=dist<1000?`${Math.round(dist)} м`:`${(dist/1000).toFixed(1)} км`;
+  const distTxt=dist<1000?`${Math.round(dist)} m`:`${(dist/1000).toFixed(1)} km`;
   document.getElementById('dh-arrow').textContent=ARROWS[Math.round(relBear/45)%8];
   document.getElementById('dh-name').textContent=`${best.icon} ${best.name}`;
   document.getElementById('dh-addr').textContent=`${DIRS[Math.round(bear/45)%8]} · ${distTxt}`;
@@ -854,7 +854,7 @@ function startGPS(){
   if(!navigator.geolocation){return;}
   if(watchId) return;
   document.getElementById('direction-hint').style.display='block';
-  document.getElementById('dh-name').textContent='🛰 Изчакай GPS…';
+  document.getElementById('dh-name').textContent='🛰 Waiting for GPS…';
   document.getElementById('dh-arrow').textContent='📡';
   watchId=navigator.geolocation.watchPosition(pos=>{
     userLat=pos.coords.latitude; userLng=pos.coords.longitude;
@@ -919,7 +919,7 @@ karykBtn.addEventListener('click',()=>{
     if(gems[0]){
       const c=karykColor(gems[0].ks);
       document.getElementById('karyk-hint').innerHTML=
-        `🥉 Иди при <span style="color:${c.fill}">${gems[0].z.icon} ${gems[0].z.name.split('(')[0].trim()}</span> (К:${gems[0].ks.toFixed(1)})`;
+        `🥉 Go to <span style="color:${c.fill}">${gems[0].z.icon} ${gems[0].z.name.split('(')[0].trim()}</span> (К:${gems[0].ks.toFixed(1)})`;
     }
   }
   render(currentHour);
@@ -946,7 +946,7 @@ function injectAirportEvents(){
   const keep=EVENTS.filter(e=>!e._fromFlight);
   for(let h=0;h<24;h++){
     const c=flightHours[h]; if(!c) continue;
-    keep.push({zone:'airport',name:`✈ ${c} рейса ~${String(h).padStart(2,'0')}:00`,
+    keep.push({zone:'airport',name:`✈ ${c} flights ~${String(h).padStart(2,'0')}:00`,
       endHour:h+0.25,boost:Math.min(3.8,c*0.42),repeat:'daily',_fromFlight:true});
   }
   EVENTS.length=0; keep.forEach(e=>EVENTS.push(e));
@@ -962,8 +962,8 @@ function applyFallbackAirport(){
 function updateAirportBadge(){
   const b=document.getElementById('airport-badge');
   if(airportStatus==='live')        {b.textContent='✈ LIVE';     b.style.color='#22c55e';}
-  else if(airportStatus==='fallback'){b.textContent='✈ ПРОГНОЗА';b.style.color='#f59e0b';}
-  else                              {b.textContent='✈ ОФЛАЙН';  b.style.color='#ef4444';}
+  else if(airportStatus==='fallback'){b.textContent='✈ FORECAST';b.style.color='#f59e0b';}
+  else                              {b.textContent='✈ OFFLINE';  b.style.color='#ef4444';}
 }
 
 function loadFlights(){
@@ -1007,7 +1007,7 @@ function loadFlights(){
       buildCurve(); buildTicker(); render(currentHour);
     })
     .catch(e=>{
-      window.__flErr = (e && (e.stack||e.message)) ? String(e.stack||e.message).slice(0,160) : ('код '+String(e));
+      window.__flErr = (e && (e.stack||e.message)) ? String(e.stack||e.message).slice(0,160) : ('code '+String(e));
       console.error('[SOF] flights failed:', e);
       applyFallbackAirport(); updateAirportBadge();
       buildCurve(); buildTicker(); render(currentHour);
@@ -1031,7 +1031,7 @@ async function loadWeather(){
   const bar=document.getElementById('weather-bar');
   if(!OWM_KEY){
     bar.style.display='flex';
-    document.getElementById('wb-desc').textContent='Добави OWM ключ в config.json';
+    document.getElementById('wb-desc').textContent='Add OWM key in config.json';
     return;
   }
   try{
@@ -1066,7 +1066,7 @@ slider.addEventListener('input',()=>{
   const realH=new Date().getHours()+new Date().getMinutes()/60;
   const isSim=Math.abs(currentHour-realH)>0.4;
   td.style.color = isSim ? '#f59e0b' : 'var(--cyan)';
-  td.title = isSim ? '⏱ Симулация — не е реалното време' : '';
+  td.title = isSim ? '⏱ Simulation — not real time' : '';
   render(currentHour);
   // Обновява панелите ако са отворени
   if(bakshishOpen) buildBakshishPanel();
@@ -1087,7 +1087,7 @@ function syncTime(){
 setInterval(syncTime,60000);
 
 // ═══════════════════════════════════════════════
-// EVENT ALERT — 15-30 мин преди голям event
+// EVENT ALERT — 15-30 min преди голям event
 // ═══════════════════════════════════════════════
 function checkEventAlerts(){
   // Event alerts използват реалния час (не slider) - за реални предупреждения
@@ -1104,9 +1104,9 @@ function checkEventAlerts(){
   if(!z) return;
   const min=Math.round((ev.endHour-h)*60);
   document.getElementById('ea-icon').textContent=z.icon;
-  document.getElementById('ea-title').textContent=`${ev.name} — след ${min} мин!`;
+  document.getElementById('ea-title').textContent=`${ev.name} — in ${min} min!`;
   document.getElementById('ea-sub').textContent=`${z.name.split('(')[0].trim()} · ${fmtHour(ev.endHour)}`;
-  document.getElementById('ea-dist').textContent=userLat?`📏 ${(haversine(userLat,userLng,z.lat,z.lng)/1000).toFixed(1)} км`:'';
+  document.getElementById('ea-dist').textContent=userLat?`📏 ${(haversine(userLat,userLng,z.lat,z.lng)/1000).toFixed(1)} km`:'';
   document.getElementById('ea-waze').onclick=()=>window.open(`https://waze.com/ul?q=${encodeURIComponent(z.wazeName||z.name)}&navigate=yes`,'_blank');
   panel.style.display='block';
 }
@@ -1120,7 +1120,7 @@ document.getElementById('event-alert').querySelector('.ea-close').addEventListen
 });
 
 // ═══════════════════════════════════════════════
-// 🎩 БАКШИШ РАДАР
+// 🎩 TIP RADAR
 // Смени и бакшиш score по тип клиент/зона/час
 
 // ═══════════════════════════════════════════════
@@ -1171,7 +1171,7 @@ async function loadLiveArrivals(){
     const r = await fetch('bus-arrivals.json?v='+Date.now());
     if(!r.ok) return;
     const d = await r.json();
-    // валидни само ако са свежи (<100 мин)
+    // валидни само ако са свежи (<100 min)
     if(d.updated && (Date.now()-new Date(d.updated).getTime()) < 100*60000){
       liveArrivals = d;
     }
@@ -1201,7 +1201,7 @@ function getSofiaArrivals(count){ return [];
   const fmt2 = mm => String(Math.floor((mm%1440)/60)).padStart(2,'0')+':'+String(mm%60).padStart(2,'0');
   const out = [];
   for(const route of (data.routes||[])){
-    if(!route.to || !route.to.includes('Централна автогара София')) continue;
+    if(!route.to || !route.to.includes('Zürich HB')) continue;
     const dur = route.duration_min || 120;
     for(const dep of route.departures){
       const [h,m] = dep.split(':').map(Number);
@@ -1209,7 +1209,7 @@ function getSofiaArrivals(count){ return [];
       const arrAbs = depMin + dur;
       let delta = arrAbs - nowMin;
       if(delta < -15) delta += 1440; // след полунощ / утрешен
-      if(delta <= 360){ // от -15 мин до +6 часа
+      if(delta <= 360){ // от -15 min до +6 часа
         out.push({dep, depMin, route, nowMin, arrMin: nowMin+delta, arrTime: fmt2(arrAbs)});
       }
     }
@@ -1233,7 +1233,7 @@ function renderBusPanel(){
   const live = getLiveArrivals(6);
   const arrivals = getSofiaArrivals(live.length ? 4 : 8);
 
-  let html = '<div style="font-size:14px;font-weight:800;color:var(--cyan);margin-bottom:8px">🚌 Пристигащи на ЦАС</div>';
+  let html = '<div style="font-size:14px;font-weight:800;color:var(--cyan);margin-bottom:8px">🚌 Arrivals at HB</div>';
 
   if(live.length){
     html += '<div style="font-size:11px;font-weight:800;color:#ef4444;margin-bottom:4px">🔴 LIVE — centralnaavtogara.bg</div>';
@@ -1241,19 +1241,19 @@ function renderBusPanel(){
       const urgency = b.until <= 15 ? 'color:#ef4444;font-weight:800' : 'color:var(--text)';
       html += `<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px">
         <span>🚌 ${b.origin} <span style="color:var(--muted);font-size:11px">${b.operator||''}</span></span>
-        <span style="${urgency};white-space:nowrap">${b.arrTime}${b.until>=0?' · след '+b.until+' мин':''}</span>
+        <span style="${urgency};white-space:nowrap">${b.arrTime}${b.until>=0?' · in '+b.until+' min':''}</span>
       </div>`;
     }
-    html += '<div style="font-size:11px;font-weight:800;color:var(--muted);margin:8px 0 4px">📋 По разписание</div>';
+    html += '<div style="font-size:11px;font-weight:800;color:var(--muted);margin:8px 0 4px">📋 Scheduled</div>';
   }
 
   if(arrivals.length){
     for(const b of arrivals){
       const until = b.arrMin - b.nowMin;
       const urgency = until <= 0 ? 'color:#ef4444;font-weight:800' : until < 40 ? 'color:#f59e0b;font-weight:800' : 'color:var(--text)';
-      const origin = (b.route.name||'').replace(' → София','');
-      const label = until <= 0 ? `пристигнал ~${b.arrTime}` :
-                    until < 90 ? `~${b.arrTime} · след ${until} мин` :
+      const origin = (b.route.name||'').replace(' → Zürich','');
+      const label = until <= 0 ? `arrived ~${b.arrTime}` :
+                    until < 90 ? `~${b.arrTime} · in ${until} min` :
                     `~${b.arrTime}`;
       html += `<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px">
         <span>🚌 ${origin} <span style="color:var(--muted);font-size:11px">${b.dep}${b.route.approx?' ≈':''}</span></span>
@@ -1261,10 +1261,10 @@ function renderBusPanel(){
       </div>`;
     }
   } else {
-    html += '<div style="color:var(--muted);font-size:12px">Няма пристигащи в следващите 6 часа</div>';
+    html += '<div style="color:var(--muted);font-size:12px">No arrivals in the next 6 hours</div>';
   }
 
-  html += '<div style="margin-top:8px;font-size:11px;color:var(--muted)">≈ разписание по модел на превозвача · Пловдив е точно</div>';
+  html += '<div style="margin-top:8px;font-size:11px;color:var(--muted)">≈ schedule model per operator</div>';
   panel.innerHTML = html;
 
   // Update every minute
@@ -1275,7 +1275,7 @@ function addBusZones(){
   var M = (typeof map!=='undefined' && map && typeof map.addLayer==='function') ? map : null;
   if(!busSchedule || !M) return;
   // Add Expo Center bus stop as zone marker
-  const expoStop = {lat:42.6543, lng:23.4012, name:'🚌 Expo Center (автобусна спирка)'};
+  const expoStop = {lat:42.6543, lng:23.4012, name:'🚌 Bus terminal'};
   const icon = L.divIcon({
     className:'',
     html:`<div style="background:#0284c7;color:#fff;border-radius:6px;padding:3px 7px;font-size:12px;font-weight:800;white-space:nowrap;box-shadow:0 2px 6px #0004">🚌 Expo</div>`,
@@ -1283,11 +1283,11 @@ function addBusZones(){
   });
   L.marker([expoStop.lat, expoStop.lng], {icon})
     .addTo(M)
-    .bindPopup(`<b style="color:#0284c7">🚌 Expo Center</b><br><small>Вход от Тракия: Пловдив · Пазарджик · Ст. Загора · Бургас</small>`);
+    .bindPopup(`<b style="color:#0284c7">🚌 Expo Center</b><br><small>Inbound A1: Bern · Basel corridor</small>`);
   // Коридорни входове — къде влизат междуградските автобуси в София
   const corridors = [
-    {lat:42.7208, lng:23.4085, short:'🚌 Хемус', pop:'<b style="color:#0284c7">🚌 Ботевградско шосе</b><br><small>Вход от Хемус: Варна · В. Търново · Плевен · Русе</small>'},
-    {lat:42.6520, lng:23.2800, short:'🚌 Струма', pop:'<b style="color:#0284c7">🚌 Бул. България</b><br><small>Вход от Струма: Благоевград · ЮЗ България</small>'},
+    {lat:42.7208, lng:23.4085, short:'🚌 A1', pop:'<b style="color:#0284c7">🚌 North corridor</b><br><small>Inbound A4: Winterthur · St. Gallen</small>'},
+    {lat:42.6520, lng:23.2800, short:'🚌 A3', pop:'<b style="color:#0284c7">🚌 West corridor</b><br><small>Inbound A3: Chur · Zug</small>'},
   ];
   corridors.forEach(c=>{
     const ci = L.divIcon({className:'',
@@ -1300,21 +1300,21 @@ function addBusZones(){
 // ═══════════════════════════════════════════════
 
 const SHIFTS = {
-  morning:   { name:"🌅 Сутрешна смяна (08–11)",    hours:[8,11],
-    tip:"Бизнес пътници, летищни трансфери, хора за прегледи. Луксозните квартали тръгват.",
-    clientType:"бизнес / турист / пациент" },
-  midday:    { name:"☀️ Обедна смяна (11–16)",       hours:[11,16],
-    tip:"Туристи разхождат се, бизнес обяди, след прегледи. Хотелски клиенти с чемодан. Корпоративни карти.",
-    clientType:"турист / бизнес обяд" },
-  afternoon: { name:"🌆 Следобедна смяна (16–20)",  hours:[16,20],
-    tip:"Офисите излизат. Театри и опера след 19ч. В дъжд се удвоява.",
-    clientType:"офис работник / театрал" },
-  evening:   { name:"🌙 Вечерна смяна (20–02)",     hours:[20,26],
-    tip:"След ресторант. След концерт — емоционален пик. Хотели 5* вечер — корпоративни.",
-    clientType:"ресторант гост / нощен" },
-  night:     { name:"🌃 Нощна смяна (02–08)",       hours:[2,8],
-    tip:"Последни гости от клубове. Летище — ранни полети. Хотелски пристигания.",
-    clientType:"нощен гост / ранен полет" },
+  morning:   { name:"🌅 Morning shift (08–11)",    hours:[8,11],
+    tip:"Business travellers, airport transfers, medical appointments. Upscale districts head out.",
+    clientType:"business / tourist / patient" },
+  midday:    { name:"☀️ Midday shift (11–16)",       hours:[11,16],
+    tip:"Tourists strolling, business lunches, post-appointments. Hotel clients with luggage. Corporate cards.",
+    clientType:"tourist / business lunch" },
+  afternoon: { name:"🌆 Afternoon shift (16–20)",  hours:[16,20],
+    tip:"Offices let out. Theatre and opera after 19h. Doubles in rain.",
+    clientType:"office worker / theatre-goer" },
+  evening:   { name:"🌙 Evening shift (20–02)",     hours:[20,26],
+    tip:"After dinner. After concerts — emotional peak. 5* hotels at night — corporate.",
+    clientType:"restaurant guest / night" },
+  night:     { name:"🌃 Night shift (02–08)",       hours:[2,8],
+    tip:"Last club guests. Airport — early flights. Hotel arrivals.",
+    clientType:"night guest / early flight" },
 };
 
 function getCurrentShift(h) {
@@ -1356,17 +1356,17 @@ const BAKSHISH_WEIGHTS = {
 
 // Причини защо дадена зона е добра за бакшиш
 const BAKSHISH_REASONS = {
-  airport:         "✈️ Чужденци с багаж — летищни трансфери",
-  hotel:           "🏨 Бизнес гости — корпоративни карти",
-  residential_lux: "💎 Луксозни квартали — висок клас клиенти",
-  hospital:        "🏥 Болнични клиенти — редовен поток",
-  theatre:         "🎭 След спектакъл — емоционален пик",
-  nightlife:       "🍷 Ресторанти и нощен живот",
-  office:          "💼 Офис работници след работа",
-  mall:            "🛍 Пазаруващи с багаж",
-  transit:         "🚌 Пристигащи с багаж — нужда от такси",
-  university:      "🎓 Много на брой — компенсира с обем",
-  karyk:           "🥉 Тих квартал — без конкуренция",
+  airport:         "✈️ Foreigners with luggage — airport transfers",
+  hotel:           "🏨 Business guests — corporate cards",
+  residential_lux: "💎 Upscale districts — premium clients",
+  hospital:        "🏥 Hospital clients — steady flow",
+  theatre:         "🎭 After the show — emotional peak",
+  nightlife:       "🍷 Restaurants and nightlife",
+  office:          "💼 Office workers after hours",
+  mall:            "🛍 Shoppers with bags",
+  transit:         "🚌 Arrivals with luggage — need a taxi",
+  university:      "🎓 High volume — compensates in numbers",
+  karyk:           "🥉 Quiet district — no competition",
 };
 
 // Дъжд мултипликатор
@@ -1421,7 +1421,7 @@ function buildBakshishPanel() {
   document.getElementById('bp-shift-label').textContent = shift.clientType;
   document.getElementById('bp-shift-name').textContent  = shift.name;
   let tip = shift.tip;
-  if (rain > 1.0) tip = `🌧 ДЪЖД БОНУС ×${rain.toFixed(1)}! ` + tip;
+  if (rain > 1.0) tip = `🌧 RAIN BONUS ×${rain.toFixed(1)}! ` + tip;
   document.getElementById('bp-shift-tip').textContent = tip;
 
   // Rank all zones by bakshish score
@@ -1438,13 +1438,13 @@ function buildBakshishPanel() {
 
   const list = document.getElementById('bakshish-list');
   if (!ranked.length) {
-    list.innerHTML = '<div style="padding:14px;color:#6a5000;font-family:Share Tech Mono,monospace">Няма активни бакшиш зони в момента</div>';
+    list.innerHTML = '<div style="padding:14px;color:#6a5000;font-family:Share Tech Mono,monospace">No active tip zones right now</div>';
     return;
   }
 
   list.innerHTML = ranked.map(({z, bs, demand}, i) => {
     const color = bakshishColor(bs);
-    const reason = BAKSHISH_REASONS[z.type] || '🚖 Потенциален клиент';
+    const reason = BAKSHISH_REASONS[z.type] || '🚖 Potential client';
     const rainTxt = rain > 1.0 ? ` 🌧×${rain.toFixed(1)}` : '';
     const stars = '⭐'.repeat(Math.min(5, Math.round(bs)));
     return `<div class="bp-item" onclick="(function(){closeBakshish();if(document.body.classList.contains('list-view'))toggleMapView();setTimeout(function(){map.invalidateSize();map.setView([${z.lat},${z.lng}],'${z.id}'==='airport'?14:15);'${z.id}'==='airport'?showAirportSchedule():showZonePopup('${z.id}');},200);})()">
@@ -1460,7 +1460,7 @@ function buildBakshishPanel() {
         <div class="bp-multiplier">demand ${demand.toFixed(1)}</div>
       </div>
     </div>`;
-  }).join('') + '<div style="padding:12px 12px 16px;text-align:center"><button onclick="closeBakshish()" style="background:#d4af37;color:#0d0e00;border:none;border-radius:8px;padding:10px 32px;font-weight:800;font-size:14px;cursor:pointer">✕ Затвори</button></div>';
+  }).join('') + '<div style="padding:12px 12px 16px;text-align:center"><button onclick="closeBakshish()" style="background:#d4af37;color:#0d0e00;border:none;border-radius:8px;padding:10px 32px;font-weight:800;font-size:14px;cursor:pointer">✕ Close</button></div>';
 }
 
 // Rebuild bakshish panel when time changes (via setInterval, not render override)
@@ -1491,6 +1491,38 @@ window.addEventListener('resize',()=>{drawSparkline(currentHour); map.invalidate
 function toggleMapView(){
   const listView = document.body.classList.toggle('list-view');
   const btn = document.getElementById('toggle-map-btn');
-  if(btn) btn.textContent = listView ? '🗺️ Карта' : '📋 Списък';
+  if(btn) btn.textContent = listView ? '🗺️ Map' : '📋 List';
   if(!listView && window.map) setTimeout(()=>map.invalidateSize(), 100);
 }
+
+// ── i18n: EN default, Züridütsch (GSW) toggle ──
+const GSW=[["ZÜRICH TAXI DEMAND","ZÜRI TAXI NOOCHFROOG"],["Live map · GPS navigation","Live Charte · GPS Navigation"],
+["Zones by priority","Zone nach Priorität"],["NEXT 90 MINUTES","NÄCHSTI 90 MINUTE"],["TIP RADAR","TRINKGÄLD-RADAR"],
+["Tip radar","Trinkgäld-Radar"],["Passenger exits — ZRH","Passagier-Usgäng — ZRH"],
+["No live flight data — forecast mode","Kei Live-Flugdate — Prognose-Modus"],["Non-Schengen","Nöd-Schengen"],
+["✈ FORECAST","✈ PROGNOSE"],["✈ OFFLINE","✈ OFFLINE"],["Morning shift","Morgeschicht"],["Midday shift","Mittagsschicht"],
+["Afternoon shift","Nomittagsschicht"],["Evening shift","Aabigschicht"],["Night shift","Nachtschicht"],
+["PEAK","SPITZE"],["High ▲","Höch ▲"],["Medium","Mittel"],["Low","Schwach"],["Good","Guet"],["Quiet district","Rueigs Quartier"],
+["Quiet","Rueig"],["Avoid","Vermiide"],["▲ Excellent","▲ Uszeichnet"],["JAMMED NOW","STAU JETZT"],["CLEAR RIGHT NOW","FREI JETZT"],
+["✕ Close","✕ Zue"],["🧭 Navigate","🧭 Navigiere"],["📋 List","📋 Liste"],["🗺️ Map","🗺️ Charte"],["📋 Scheduled","📋 Nach Fahrplan"],
+["flights","Flüüg"],[" · in "," · i "],[" min"," Min"],["Last trains","Letschti Züüg"],["Bars closing","Beize gönd zue"],
+["Clubs closing","Clubs gönd zue"],["Banks/offices — out","Banke/Büros — Fyraabig"],["Loading flights…","Flüüg am lade…"],
+["No arrivals in the next 6 hours","Kei Aakünft i de nächschte 6 Stund"],["UPCOMING / NOW","CHUNNT / JETZT"],
+["Baseline demand","Grundnoochfroog"],["Waiting for GPS…","Warte uf GPS…"],["Install ZUR Radar","ZUR Radar installiere"],
+["Install ↓","Installiere ↓"],["Not now","Spöter"],["Works offline · Quick access","Funktioniert offline · Schnällzuegriff"],
+["Top:","Top:"],["Next:","Nöchscht:"]].sort((a,b)=>b[0].length-a[0].length);
+let uiLang=localStorage.getItem('zur_lang')||'en';
+function gswWalk(n){
+  if(n.nodeType===3){let t=n.nodeValue,c=false;
+    for(const[k,v]of GSW){if(t.includes(k)){t=t.split(k).join(v);c=true;}}
+    if(c)n.nodeValue=t;}
+  else if(n.nodeType===1&&n.tagName!=='SCRIPT'&&n.tagName!=='STYLE'){for(const ch of n.childNodes)gswWalk(ch);}
+}
+if(uiLang==='gsw')setInterval(()=>gswWalk(document.body),1000);
+(function(){
+  const b=document.createElement('button');
+  b.textContent=uiLang==='gsw'?'EN':'GSW';
+  b.style.cssText='position:fixed;top:10px;right:10px;z-index:9999;font:700 11px monospace;padding:5px 9px;border:1px solid #888;border-radius:6px;background:#111;color:#f0b429;cursor:pointer';
+  b.onclick=()=>{localStorage.setItem('zur_lang',uiLang==='gsw'?'en':'gsw');location.reload();};
+  document.body.appendChild(b);
+})();
