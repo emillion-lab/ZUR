@@ -521,7 +521,7 @@ function showTransitPopup(zid){
 // ═══ AIRPORT SCHEDULE POPUP ═══
 function showAirportSchedule() {
   const now = new Date();
-  const nowMin = ((now.getUTCHours()+3)%24)*60 + now.getUTCMinutes();
+  const nowMin = ((now.getUTCHours()+2)%24)*60 + now.getUTCMinutes();
 
   const fmt = (h,m) => String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
   const flag = f => f.nonSchengen ? '🛂' : '🇪🇺';
@@ -961,7 +961,8 @@ function applyFallbackAirport(){
 
 function updateAirportBadge(){
   const b=document.getElementById('airport-badge');
-  if(airportStatus==='live')        {b.textContent='✈ LIVE';     b.style.color='#22c55e';}
+  if(airportStatus==='demo'){b.textContent='✈ SCHED·DEMO';b.style.color='#f59e0b';}
+  else if(airportStatus==='live')        {b.textContent='✈ LIVE';     b.style.color='#22c55e';}
   else if(airportStatus==='fallback'){b.textContent='✈ FORECAST';b.style.color='#f59e0b';}
   else                              {b.textContent='✈ OFFLINE';  b.style.color='#ef4444';}
 }
@@ -982,12 +983,12 @@ function loadFlights(){
         const exitLast  = nonSchengen ? 35 : 25;
         const tFirst = new Date(t.getTime() + exitFirst*60000);
         const tLast  = new Date(t.getTime() + exitLast*60000);
-        const hFirst = (tFirst.getUTCHours()+3)%24;
-        const hLast  = (tLast.getUTCHours()+3)%24;
+        const hFirst = (tFirst.getUTCHours()+2)%24;
+        const hLast  = (tLast.getUTCHours()+2)%24;
         const mFirst = tFirst.getUTCMinutes();
         const mLast  = tLast.getUTCMinutes();
         // Spread passengers across exit window (3 slots: start, mid, end)
-        const hMid = (new Date(t.getTime()+(exitFirst+exitLast)/2*60000).getUTCHours()+3)%24;
+        const hMid = (new Date(t.getTime()+(exitFirst+exitLast)/2*60000).getUTCHours()+2)%24;
         flightHours[hFirst] = (flightHours[hFirst]||0) + 0.3;
         flightHours[hMid]   = (flightHours[hMid]||0)   + 0.5;
         flightHours[hLast]  = (flightHours[hLast]||0)  + 0.2;
@@ -996,13 +997,13 @@ function loadFlights(){
         const depAirport = f.departure?.airport||dep;
         flightDetails.push({
           fn, depAirport, nonSchengen:!!nonSchengen,
-          landH:(t.getUTCHours()+3)%24, landM:t.getUTCMinutes(),
+          landH:(t.getUTCHours()+2)%24, landM:t.getUTCMinutes(),
           exitFromH:hFirst, exitFromM:mFirst,
           exitToH:hLast,   exitToM:mLast
         });
       });
       console.log('[SOF] flightDetails populated:', flightDetails.length, 'flights');
-      airportStatus='live';
+      airportStatus=(data.demo?'demo':'live');
       injectAirportEvents(); updateAirportBadge();
       buildCurve(); buildTicker(); render(currentHour);
     })
