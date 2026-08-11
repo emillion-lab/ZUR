@@ -710,6 +710,21 @@ body.list-view #toggle-map-btn {
   --amber:#f59e0b; --cyan:#0284c7; --green:#22c55e;
   --red:#ef4444; --orange:#f97316; --muted:#64748b; --text:#1e293b;
 }
+body.theme-night {
+  --bg:#0a0e1a; --surface:#0f1729; --border:#1e2b42;
+  --amber:#fbbf24; --cyan:#22d3ee; --green:#34d399;
+  --red:#f87171; --orange:#fb923c; --muted:#8ea0b8; --text:#e2e8f0;
+}
+body{ transition:background-color .3s ease, color .3s ease; }
+#theme-btn{
+  width:26px; height:26px; border-radius:50%; cursor:pointer;
+  border:1.5px solid var(--border); background:var(--surface); color:var(--text);
+  font-size:13px; line-height:1; flex-shrink:0;
+  transition:transform .3s ease, border-color .3s ease;
+}
+#theme-btn:active{ transform:scale(.9) rotate(-25deg); }
+body.theme-night #theme-btn{ border-color:var(--cyan); box-shadow:0 0 10px rgba(34,211,238,.35); }
+
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{font-size:16px;min-height:100%;margin:0;padding:0;}
 body{font-size:16px;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
@@ -1133,6 +1148,7 @@ body.map-fullscreen #next90-btn { display:none; }
     <p>Live map · GPS navigation</p>
   </div>
   <div class="hdr-right">
+    <button id="theme-btn" title="Нощна тема">◑</button>
     <span id="airport-badge">✈ LOADING…</span>
     <div class="live-dot"></div>
   </div>
@@ -1263,6 +1279,14 @@ body.map-fullscreen #next90-btn { display:none; }
   </div>
 </div>
 <script src="leaflet.min.js"></script>
+<script src="theme.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
 <script src="app.js?v=20260704c"></script>
 
 <!-- PWA Install Banner -->
