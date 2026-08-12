@@ -954,6 +954,7 @@ function injectAirportEvents(){
 
 function applyFallbackAirport(){
   airportStatus='fallback';
+  window.flightDetails = flightDetails;
   [[5,3],[6,8],[7,10],[8,9],[9,8],[10,9],[11,10],[12,8],[13,9],[14,8],[15,10],[16,11],
    [17,10],[18,9],[19,8],[20,7],[21,6],[22,4],[23,2]].forEach(([h,c])=>{flightHours[h]=c;});
   injectAirportEvents();
@@ -1003,6 +1004,9 @@ function loadFlights(){
         });
       });
       console.log('[SOF] flightDetails populated:', flightDetails.length, 'flights');
+      // ZUR-FLIGHTS-OUT — таблото чете оттук
+      window.flightDetails = flightDetails;
+      if(window.ZURTransportRedraw) window.ZURTransportRedraw();
       airportStatus=(data.demo?'demo':'live');
       injectAirportEvents(); updateAirportBadge();
       buildCurve(); buildTicker(); render(currentHour);
