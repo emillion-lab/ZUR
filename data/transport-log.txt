@@ -1,13 +1,13 @@
-тегля Zürich HB
-тегля Zürich Oerlikon
-тегля Zürich Stadelhofen
-тегля Zürich Flughafen
-тегля Zürich, Bahnhofquai/HB
-тегля Zürich, Central
-тегля Zürich, Bellevue
-тегля Zürich, Paradeplatz
-тегля Zürich, Stauffacher
-тегля Zürich, Bahnhof Enge
-тегля Zürich, Carparkplatz Sihlquai
-общо записи: 91 · влак 40 · трамвай 40 · автобус 11 · международни 0
-записан data/transport.json: 10302 байта
+тегля пристигащи: Zürich HB
+тегля пристигащи: Zürich Oerlikon
+тегля пристигащи: Zürich Stadelhofen
+тегля пристигащи: Zürich Flughafen
+тегля пристигащи: Zürich, Bahnhofquai/HB
+тегля пристигащи: Zürich, Central
+тегля пристигащи: Zürich, Bellevue
+тегля пристигащи: Zürich, Paradeplatz
+тегля пристигащи: Zürich, Stauffacher
+тегля пристигащи: Zürich, Bahnhof Enge
+тегля пристигащи: Zürich, Carparkplatz Sihlquai
+общо пристигащи: 88 · влак 40 · трамвай 40 · автобус 8 · международни 0
+записан data/transport.json: 10101 байта
