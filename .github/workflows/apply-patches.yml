@@ -1,0 +1,52 @@
+name: Apply Patches
+# Прилага чакащите patch_*.py скриптове върху source файловете и връща
+# резултата в repo-то. Пуска се при пипване на .run или на самите скриптове —
+# така промените стават без Actions бутона (напр. от телефон).
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.run'
+      - 'patch_*.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply pending patches
+        run: |
+          for p in patch_*.py; do
+            [ -f "$p" ] || continue
+            echo "── $p ──"
+            python3 "$p"
+          done
+
+      - name: Syntax check
+        run: |
+          node --check app.js && echo "app.js OK"
+          node --check theme.js && echo "theme.js OK"
+          node --check weather-sky.js && echo "weather-sky.js OK"
+          node --check sw.js && echo "sw.js OK"
+          python3 -c "import json; json.load(open('manifest.json')); print('manifest.json OK')"
+
+      - name: Commit if changed
+        run: |
+          git config user.name ci; git config user.email ci@zur
+          if git diff --quiet; then
+            echo "без промени"
+          else
+            # версията в script тага се вдига, за да не сервира браузърът стар app.js
+            V=$(date -u +%Y%m%d%H%M)
+            sed -i "s/app\.js?v=[0-9a-z]*/app.js?v=$V/" index.html
+            git add -A
+            git commit -m "apply patches, bump app.js version [skip ci]"
+            git fetch origin main && git rebase origin/main || true
+            git push
+          fi
