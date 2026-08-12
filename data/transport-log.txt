@@ -1,0 +1,8 @@
+тегля Zürich HB
+тегля Zürich Oerlikon
+тегля Zürich Stadelhofen
+тегля Zürich Flughafen
+тегля Zürich, Bahnhofquai/HB
+тегля Zürich, Sihlquai
+общо записи: 80 · влак 40 · трамвай 20 · автобус 20 · международни 0
+записан data/transport.json: 8879 байта
