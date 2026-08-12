@@ -36,8 +36,13 @@
       ['Zürich, Central',        'Central'],
       ['Zürich, Bellevue',       'Bellevue']
     ],
+    // INTL-WIDE — имената на терминала се разминават между базите,
+    // затова се пробват няколко и се събира каквото върне
     intl: [
-      ['Zürich, Carparkplatz Sihlquai', 'Sihlquai']
+      ['Zürich, Carparkplatz Sihlquai', 'Sihlquai'],
+      ['Zürich, Sihlquai/HB',           'Sihlquai/HB'],
+      ['Zürich Sihlquai',               'Sihlquai'],
+      ['Zürich, Busbahnhof',            'Busbahnhof']
     ]
   };
 
@@ -168,8 +173,9 @@
 
   // ── теглене на живо ──
   function fetchStop(name, key, kind){
+    var lim = (kind === 'intl') ? 40 : 15;
     var u = API + '?station=' + encodeURIComponent(name)
-          + '&limit=15&type=arrival';
+          + '&limit=' + lim + '&type=arrival';
     return fetch(u).then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){
         if(!d || !d.stationboard) return [];
@@ -179,7 +185,10 @@
           if(!when) return null;
           var cat = (e.category || '').toUpperCase();
           if(kind === 'train' && !TRAIN_CAT[cat]) return null;
-          if((kind === 'bus' || kind === 'intl') && !BUS_CAT[cat]) return null;
+          if(kind === 'bus' && !BUS_CAT[cat]) return null;
+          // при международните не отсяваме: превозвачите ги вписват
+          // ту като B, ту като нищо, а един пропуснат ред тук боли повече
+          // от един излишен
           var pr = (stop.prognosis || {});
           var pw = pr.arrival || pr.departure;
           var delay = 0;
@@ -213,7 +222,8 @@
       // една линия от една спирка се повтаря; държим по две
       var seen = {}, keep = [];
       rows.forEach(function(r){
-        var sig = r.st + '|' + r.cat + r.line + '|' + r.from;
+        var sig = (kind === 'intl' ? '' : r.st) + '|'
+                + r.cat + r.line + '|' + r.from + '|' + r.t;
         seen[sig] = (seen[sig] || 0) + 1;
         if(seen[sig] <= 2) keep.push(r);
       });
@@ -272,6 +282,23 @@
     });
   }
 
+
+  // Международните ги няма в швейцарското разписание — по-добре да се
+  // каже, отколкото шофьорът да реши, че приложението е счупено.
+  function emptyText(){
+    if(open === 'intl'){
+      return isGsw()
+        ? 'Kei Uslandbüs im Fahrplaa.<br><span style="font-size:12px">'
+          + 'FlixBus &amp; Co. gänd ihri Zite nöd a d\u2019SBB wiiter.<br>'
+          + 'Terminal: Carparkplatz Sihlquai</span>'
+        : 'International coaches are not in the Swiss timetable.'
+          + '<br><span style="font-size:12px">FlixBus and others do not publish '
+          + 'to SBB, so nothing can be shown here.<br>'
+          + 'Terminal: Carparkplatz Sihlquai, next to the main station</span>';
+    }
+    return isGsw() ? 'Grad chunnt nüt aa.' : 'Nothing arriving right now.';
+  }
+
   function render(){
     if(!open) return;
     var body = document.getElementById('tp-body');
@@ -294,9 +321,7 @@
     var c = cache[open];
     if(!c || !c.rows.length){
       stamp.textContent = '';
-      body.innerHTML = '<div class="tp-empty">'
-        + (isGsw() ? 'Grad chunnt nüt aa.' : 'Nothing arriving right now.')
-        + '</div>';
+      body.innerHTML = '<div class="tp-empty">' + emptyText() + '</div>';
       return;
     }
 
@@ -310,7 +335,9 @@
       var mins = r.ts ? Math.round((r.ts - now) / 60000) : null;
       var isNow  = mins !== null && mins >= -5 && mins <= 5;
       var isPast = mins !== null && mins < -5;
-      if(isPast) return;                       // минали пристигания не помагат
+      // Международните са по няколко на ден — минал автобус пак е
+      // сведение кога идва следващият, затова не се крие.
+      if(isPast && open !== 'intl') return;
 
       if(isNow && !wroteNow){
         html += '<div class="tp-sec">' + (isGsw() ? 'Jetzt' : 'Arriving now') + '</div>';
@@ -331,8 +358,7 @@
             + '</div>';
     });
 
-    if(!html) html = '<div class="tp-empty">'
-      + (isGsw() ? 'Grad chunnt nüt aa.' : 'Nothing arriving right now.') + '</div>';
+    if(!html) html = '<div class="tp-empty">' + emptyText() + '</div>';
 
     body.innerHTML = html + '<div class="tp-note">transport.opendata.ch</div>';
   }
