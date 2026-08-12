@@ -1,0 +1,56 @@
+name: Fetch Transport
+# Тегли разписанията на Цюрих от отворения швейцарски API и ги разделя
+# по вид транспорт. Пуска се по график и при пипване на .run.
+on:
+  schedule:
+    # четири пъти на ден по местно време: рано, обед, вечер, късно
+    - cron: '10 4,10,16,21 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.run'
+      - 'scripts/fetch_transport.py'
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch schedules
+        continue-on-error: true
+        run: python3 scripts/fetch_transport.py 2>&1 | tee data/transport-log.txt
+
+      - name: Show what came back
+        if: always()
+        run: |
+          if [ -f data/transport.json ]; then
+            python3 - <<'EOF'
+          import json
+          d = json.load(open('data/transport.json'))
+          for k in ('train','tram','bus','intl'):
+              rows = d.get(k) or []
+              print(f'{k:6s} {len(rows):3d}', rows[0] if rows else '')
+          print('генериран:', d.get('generated'))
+          EOF
+          else
+            echo "няма data/transport.json"
+          fi
+
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name ci; git config user.email ci@zur
+          mkdir -p data
+          git add -f data/transport.json data/transport-log.txt 2>/dev/null || true
+          git commit -m "transport schedules refreshed [skip ci]" || echo "без промени"
+          git fetch origin main && git rebase origin/main || true
+          git push
