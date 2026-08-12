@@ -21,17 +21,25 @@ import urllib.request
 
 API = 'https://transport.opendata.ch/v1/stationboard'
 
-# Спирките, които обслужват таксиметровите зони. Взимаме заминаванията:
-# човек, който току-що е слязъл, идва от някъде — но за такси е по-важно
-# кога тръгва последното превозно средство, защото след него хората
-# остават на улицата.
+# Спирките, които обслужват таксиметровите зони.
+# Първият опит ползваше само Bahnhofquai за градския транспорт и оттам
+# идваше единствено автобус 46 — затова тук са добавени същинските
+# трамвайни и автобусни възли на града.
 STATIONS = [
-    ('Zürich HB',             'hb'),
-    ('Zürich Oerlikon',       'oerlikon'),
-    ('Zürich Stadelhofen',    'stadelhofen'),
-    ('Zürich Flughafen',      'airport'),
-    ('Zürich, Bahnhofquai/HB', 'quai'),     # трамваи и автобуси пред гарата
-    ('Zürich, Sihlquai',      'sihlquai'),  # международните автобуси
+    # ── влакове ──
+    ('Zürich HB',                  'hb',          'rail'),
+    ('Zürich Oerlikon',            'oerlikon',    'rail'),
+    ('Zürich Stadelhofen',         'stadelhofen', 'rail'),
+    ('Zürich Flughafen',           'airport',     'rail'),
+    # ── трамваи и градски автобуси ──
+    ('Zürich, Bahnhofquai/HB',     'quai',        'city'),
+    ('Zürich, Central',            'central',     'city'),
+    ('Zürich, Bellevue',           'bellevue',    'city'),
+    ('Zürich, Paradeplatz',        'parade',      'city'),
+    ('Zürich, Stauffacher',        'stauffacher', 'city'),
+    ('Zürich, Bahnhof Enge',       'enge',        'city'),
+    # ── международни автобуси (FlixBus и др.) ──
+    ('Zürich, Carparkplatz Sihlquai', 'sihlquai', 'intl'),
 ]
 
 # Категориите, както ги връща API-то. Списъкът е нарочно широк —
@@ -97,7 +105,7 @@ def bucket(cat):
 def main():
     out = {'train': [], 'tram': [], 'bus': [], 'intl': []}
 
-    for name, key in STATIONS:
+    for name, key, role in STATIONS:
         print('тегля', name)
         rows = fetch(name)
         for e in rows:
@@ -107,17 +115,25 @@ def main():
             b = bucket(n['cat'])
             if not b:
                 continue
-            # Sihlquai е спирката на международните линии — отделен кош,
-            # за да не се смесват с градските автобуси.
-            if key == 'sihlquai' and b == 'bus':
+            # Спирката на международните линии е отделен кош, за да не се
+            # смесва с градските автобуси.
+            if role == 'intl' and b == 'bus':
                 out['intl'].append(n)
             else:
                 out[b].append(n)
         time.sleep(1.2)                     # възпитано темпо към чуждия API
 
-    for k in out:
-        out[k].sort(key=lambda r: r['ts'])
-        out[k] = out[k][:40]
+    # една и съща линия от една спирка към една посока се повтаря
+    # на всеки няколко минути; държим по три такива, за да не задръсти
+    seen = {}
+    for k in ('train', 'tram', 'bus', 'intl'):
+        keep = []
+        for r in sorted(out[k], key=lambda r: r['ts']):
+            sig = (r['st'], r['cat'], r['line'], r['to'])
+            seen[sig] = seen.get(sig, 0) + 1
+            if seen[sig] <= 3:
+                keep.append(r)
+        out[k] = keep[:40]
 
     total = sum(len(v) for v in out.values())
     print('общо записи:', total,
