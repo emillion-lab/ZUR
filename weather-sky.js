@@ -1,5 +1,5 @@
 // Zürich Taxi Radar — анимиран пейзаж в лентата за времето
-// Портирано от BAK (небе, звезди, луна/слънце, облаци, дъжд, сняг, птици,
+// Портирано от BAK (небе, звезди, луна, облаци, дъжд, сняг, птици,
 // самолет, мъгла, светкавица). Без такси и без пътя за нея — по избор.
 // Собствен, независим извор на данни (Open-Meteo, без ключ), координати Цюрих.
 // Не пипа текста в лентата (°C/описание) — той си идва от съществуващия OWM код.
@@ -137,7 +137,7 @@
       });
     }
 
-    // слънце / луна
+    // луна с реална фаза (само нощем)
     var cx = W*.045, cy = H*.26, R = Math.min(8, H*.20);
     if(state.night){
       var ph = moonPhase();
@@ -170,19 +170,9 @@
       // мек ореол
       ctx.strokeStyle = 'rgba(226,232,240,.20)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(cx, cy, R + 2.5, 0, 6.28); ctx.stroke();
-    } else {
-      var pulse = 1 + .06*Math.sin(t/28);
-      ctx.fillStyle = 'rgba(253,196,60,.95)';
-      ctx.beginPath(); ctx.arc(cx, cy, R*pulse, 0, 6.28); ctx.fill();
-      ctx.strokeStyle = 'rgba(253,196,60,.35)'; ctx.lineWidth = 1.2;
-      for(var i=0;i<8;i++){
-        var a = t/90 + i*.785;
-        ctx.beginPath();
-        ctx.moveTo(cx + Math.cos(a)*(R+3), cy + Math.sin(a)*(R+3));
-        ctx.lineTo(cx + Math.cos(a)*(R+6), cy + Math.sin(a)*(R+6));
-        ctx.stroke();
-      }
     }
+    // Денем не рисуваме слънце: емоджито ☀️ в самата лента вече е там
+    // и двете заедно изглеждат като две слънца.
 
     // хълмове
     ctx.fillStyle = state.night ? 'rgba(18,42,32,.55)' : 'rgba(74,140,90,.35)';
