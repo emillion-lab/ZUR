@@ -1,0 +1,62 @@
+name: Fetch FlixBus
+# Международните автобуси не са в швейцарското разписание, затова се
+# питат направо. Интерфейсът им е неофициален — логът се пази, за да
+# се вижда кога се счупи.
+on:
+  schedule:
+    - cron: '25 5,11,17,22 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.run'
+      - 'scripts/fetch_flixbus.py'
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Prepare data dir
+        run: mkdir -p data
+
+      - name: Fetch coach arrivals
+        continue-on-error: true
+        run: python3 scripts/fetch_flixbus.py 2>&1 | tee data/flixbus-log.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "── лог ──"
+          cat data/flixbus-log.txt || echo "няма лог"
+          echo ""
+          if [ -f data/flixbus.json ]; then
+            python3 - <<'EOF'
+          import json
+          d = json.load(open('data/flixbus.json'))
+          a = d.get('arrivals') or []
+          print('пристигащи:', len(a))
+          for r in a[:8]:
+              print(' ', r['t'], r['from'], '→', r['station'], '·', r['operator'])
+          EOF
+          else
+            echo "няма data/flixbus.json"
+          fi
+
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name ci; git config user.email ci@zur
+          git add -f data/flixbus.json data/flixbus-log.txt 2>/dev/null || true
+          git add -A data 2>/dev/null || true
+          git commit -m "flixbus arrivals refreshed [skip ci]" || echo "без промени"
+          git fetch origin main && git rebase origin/main || true
+          git push
