@@ -48,6 +48,7 @@
 
   var TRAIN_CAT = {S:1,SN:1,IC:1,ICE:1,IR:1,RE:1,R:1,EC:1,TGV:1,RJX:1,NJ:1,PE:1};
   var BUS_CAT   = {B:1,BUS:1,NFB:1,TRO:1,NFO:1,KB:1};
+  var TRAM_CAT  = {T:1,TRAM:1,NFT:1};
 
   var cache = {};          // {kind: {rows, at}}
   var open = null, busy = false;
@@ -186,9 +187,17 @@
           var cat = (e.category || '').toUpperCase();
           if(kind === 'train' && !TRAIN_CAT[cat]) return null;
           if(kind === 'bus' && !BUS_CAT[cat]) return null;
-          // при международните не отсяваме: превозвачите ги вписват
-          // ту като B, ту като нищо, а един пропуснат ред тук боли повече
-          // от един излишен
+          // INTL-NOTRAM — Sihlquai е и трамвайна спирка. Предишната
+          // версия пускаше всичко и таблото се напълни с T50/T51/T17,
+          // тоест градски трамваи, обявени за международни автобуси.
+          if(kind === 'intl'){
+            if(TRAM_CAT[cat]) return null;              // трамвай не е междуградски
+            if(!BUS_CAT[cat] && cat !== '') return null;
+            var ln = String(e.number || '');
+            // градските линии са двуцифрени; международните носят име
+            // на превозвача или трицифрен номер
+            if(/^\d{1,2}$/.test(ln)) return null;
+          }
           var pr = (stop.prognosis || {});
           var pw = pr.arrival || pr.departure;
           var delay = 0;
