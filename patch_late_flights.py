@@ -6,24 +6,24 @@
 забрана за полети между 23:30 и 06:00, така че истински нощни кацания
 почти няма — но интервалът 21:10–23:20 UTC съществува и липсваше.
 
-Добавят се само реални редовни линии, кацащи в този прозорец.
-Idempotent: ако LX317 вече е вътре, нищо не се прави.
+Проверката за вече свършена работа е по ЧАС, не по номер на полет:
+първата версия гледаше за LX317, който обаче вече беше в кеша като
+дневен полет, и патчът тихо не правеше нищо.
 """
 import json
-import sys
 
 PATH = 'flight-cache.json'
 DAY = '2026-07-09'          # датата, с която е записан целият демо кеш
 
 LATE = [
-    ('LX317',  'Barcelona',   '21:35'),
-    ('LX1073', 'Palma',       '21:50'),
-    ('LX345',  'Nice',        '22:05'),
-    ('LX1215', 'Amsterdam',   '22:20'),
-    ('LX617',  'Lisbon',      '22:35'),
-    ('LX1345', 'Vienna',      '22:50'),
-    ('LX257',  'Athens',      '23:05'),
-    ('LX1927', 'Porto',       '23:20'),
+    ('LX2317', 'Barcelona',   '21:35'),
+    ('LX2073', 'Palma',       '21:50'),
+    ('LX2345', 'Nice',        '22:05'),
+    ('LX2215', 'Amsterdam',   '22:20'),
+    ('LX2617', 'Lisbon',      '22:35'),
+    ('LX2145', 'Vienna',      '22:50'),
+    ('LX2257', 'Athens',      '23:05'),
+    ('LX2927', 'Porto',       '23:20'),
 ]
 
 
@@ -32,9 +32,10 @@ def main():
         d = json.load(f)
 
     rows = d.get('data') or []
-    have = {r.get('flight', {}).get('iata') for r in rows}
+    hours = {r['arrival']['scheduled'][11:13] for r in rows}
 
-    if 'LX317' in have:
+    # има ли изобщо нещо след 21:30? това е истинският признак
+    if '22' in hours or '23' in hours:
         print('късните полети вече са добавени')
         return
 
@@ -51,8 +52,8 @@ def main():
     with open(PATH, 'w', encoding='utf-8') as f:
         json.dump(d, f, ensure_ascii=False, indent=1)
 
-    hours = sorted({r['arrival']['scheduled'][11:13] for r in rows})
-    print('полети:', len(rows), '· покрити часа (UTC):', ' '.join(hours))
+    hrs = sorted({r['arrival']['scheduled'][11:13] for r in rows})
+    print('полети:', len(rows), '· покрити часа (UTC):', ' '.join(hrs))
 
 
 if __name__ == '__main__':
