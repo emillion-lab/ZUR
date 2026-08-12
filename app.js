@@ -1036,7 +1036,7 @@ async function loadWeather(){
     return;
   }
   try{
-    const r=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=47.3769&lon=8.5417&units=metric&lang=${(window.ZURLang&&window.ZURLang.get()==='gsw')?'de':'en'}&appid=${OWM_KEY}`);
+    const r=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=47.3769&lon=8.5417&units=metric&lang=${(typeof uiLang!=='undefined'&&uiLang==='gsw')?'de':'en'}&appid=${OWM_KEY}`);
     const d=await r.json();
     if(d.cod!==200) throw 0;
     const w=d.weather[0], temp=Math.round(d.main.temp), wind=d.wind?.speed||0;
@@ -1486,6 +1486,18 @@ geocodeZones();     // async — прецизира координатите о�
 setTimeout(()=>{drawSparkline(currentHour); map.invalidateSize();},300);
 window.addEventListener('resize',()=>{drawSparkline(currentHour); map.invalidateSize();});
 
+
+// ZUR-EXPOSE — нужно, защото всичко горе е вътре в DOMContentLoaded,
+// а inline onclick се изпълнява в глобален обхват.
+window.map                 = map;
+window.showAirportSchedule = showAirportSchedule;
+window.showZonePopup       = showZonePopup;
+window.showTransitPopup    = showTransitPopup;
+window.render              = render;
+window.computeScores       = computeScores;
+window.ZONES               = ZONES;
+window.getCurrentHour      = function(){ return currentHour; };
+
 }); // end DOMContentLoaded
 
 
@@ -1493,7 +1505,7 @@ function toggleMapView(){
   const listView = document.body.classList.toggle('list-view');
   const btn = document.getElementById('toggle-map-btn');
   if(btn) btn.textContent = listView ? '🗺️ Map' : '📋 List';
-  if(!listView && window.map) setTimeout(()=>map.invalidateSize(), 100);
+  if(!listView && window.map) setTimeout(function(){ window.map.invalidateSize(); }, 100);
 }
 
 // ── i18n: EN default, Züridütsch (GSW) toggle ──
@@ -1529,7 +1541,7 @@ if(uiLang==='gsw')setInterval(()=>gswWalk(document.body),1000);
 })();
 
 // картата вече е гъвкава по височина — премерва се при въртене
-window.ZURMapResize = function(){ try{ map.invalidateSize(); }catch(e){} };
+window.ZURMapResize = function(){ try{ window.map.invalidateSize(); }catch(e){} };
 window.addEventListener('resize', function(){ setTimeout(window.ZURMapResize, 120); });
 window.addEventListener('orientationchange', function(){ setTimeout(window.ZURMapResize, 300); });
 setTimeout(window.ZURMapResize, 400);
