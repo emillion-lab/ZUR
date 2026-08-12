@@ -128,8 +128,10 @@ def main():
         print('НЕ МОГА ДА НАМЕРЯ ЦЮРИХ — интерфейсът вероятно се е сменил')
         sys.exit(1)
 
+    # ONE-DAY — заявката за утре връща 400 при това съчетание от
+    # параметри; днешният ден дава шейсетина курса и стига за смяната.
     today = datetime.date.today()
-    days = [today, today + datetime.timedelta(days=1)]
+    days = [today]
 
     arrivals = []
     for name in ORIGINS:
