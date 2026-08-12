@@ -679,7 +679,7 @@ window.startNav=function(zid){
 // ═══════════════════════════════════════════════
 const canvas=document.getElementById('demand-canvas');
 const ctx=canvas.getContext('2d');
-const MIN_H=6, MAX_H=24, STEPS=72;
+const MIN_H=0, MAX_H=24, STEPS=96;
 
 function buildCurve() {
   demandCurve=[];
