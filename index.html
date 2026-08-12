@@ -1300,6 +1300,91 @@ body.theme-night .leaflet-container{ background:#0a0e14; }
   #gps-btn, #fs-btn, #next90-btn, #bakshish-btn, #theme-btn{ transition:none; }
 }
 
+/* ZUR-BAK-RAIL */
+/* ══════════════════════════════════════════════════════════════
+   Една стъклена колона вдясно — както е в BAK днес.
+   Заоблени квадрати, не кръгове; закотвени отдолу, за да не
+   изпадат под екрана при по-висока шапка.
+   ══════════════════════════════════════════════════════════════ */
+#gps-btn, #fs-btn, #next90-btn, #bakshish-btn{
+  position:fixed !important; right:12px !important; left:auto !important;
+  width:48px !important; height:48px !important;
+  min-width:48px !important; max-width:48px !important;
+  border-radius:16px !important; padding:0 !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  font-size:22px !important; line-height:1 !important;
+  color:var(--text) !important;
+  background:var(--glass) !important;
+  border:0 !important;
+  box-shadow:
+    0 6px 18px rgba(15,27,45,.20),
+    0 1px 0 rgba(255,255,255,.75) inset,
+    0 0 0 1px var(--glass-edge) !important;
+  backdrop-filter:saturate(180%) blur(16px);
+  -webkit-backdrop-filter:saturate(180%) blur(16px);
+  z-index:2400 !important;
+  transition:transform .16s var(--ease), box-shadow .2s var(--ease), opacity .25s var(--ease);
+  cursor:pointer;
+}
+body.theme-night #gps-btn, body.theme-night #fs-btn,
+body.theme-night #next90-btn, body.theme-night #bakshish-btn{
+  box-shadow:
+    0 6px 20px rgba(0,0,0,.55),
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 0 0 1px rgba(34,211,238,.45) !important;
+}
+#gps-btn:active, #fs-btn:active,
+#next90-btn:active, #bakshish-btn:active{ transform:scale(.9) !important; }
+
+/* колоната се брои отдолу нагоре, с равен отстъп */
+#fs-btn      { bottom:16px  !important; top:auto !important; }
+#gps-btn     { bottom:72px  !important; top:auto !important; }
+#next90-btn  { bottom:128px !important; top:auto !important; }
+#bakshish-btn{ bottom:184px !important; top:auto !important; }
+
+/* активните — само пръстен, без смяна на фона */
+#gps-btn.active{
+  color:var(--green) !important;
+  box-shadow:0 6px 18px rgba(15,27,45,.20), 0 0 0 2px var(--green) !important;
+}
+#fs-btn.active, #next90-btn.active{
+  color:var(--cyan) !important;
+  box-shadow:0 6px 18px rgba(15,27,45,.20), 0 0 0 2px var(--cyan) !important;
+}
+
+/* по-тесни телефони — колоната се свива, за да не яде картата */
+@media (max-width:400px){
+  #gps-btn, #fs-btn, #next90-btn, #bakshish-btn{
+    width:42px !important; height:42px !important;
+    min-width:42px !important; max-width:42px !important;
+    font-size:19px !important; border-radius:13px !important;
+  }
+  #fs-btn      { bottom:14px  !important; }
+  #gps-btn     { bottom:64px  !important; }
+  #next90-btn  { bottom:114px !important; }
+  #bakshish-btn{ bottom:164px !important; }
+}
+
+/* ── СПИСЪКЪТ: по-нисък и встрани от колоната ── */
+#zone-sidebar{
+  left:8px !important;
+  right:70px !important;          /* спира преди бутоните */
+  bottom:12px !important;
+  max-height:30vh !important;
+  z-index:1150 !important;
+}
+body.list-view #zone-sidebar{
+  position:static !important; right:auto !important;
+  max-height:none !important; border-radius:0 !important;
+}
+
+/* ── КАРЪК режимът отпада: не носи нищо тук и само закрива екрана ── */
+#karyk-btn, #karyk-banner, #karyk-sidebar{ display:none !important; }
+
+/* ── Бакшиш бутонът остава, но панелът му дублира списъка ── */
+#bakshish-panel{ display:none !important; }
+#bakshish-btn{ display:none !important; }
+
 </style>
 </head>
 <body>
@@ -1449,7 +1534,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<script src="app.js?v=202608120500"></script>
+<script src="app.js?v=202608120512"></script>
 
 <!-- PWA Install Banner -->
 <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:#0284c7;padding:10px 14px;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 -3px 15px #0003">
