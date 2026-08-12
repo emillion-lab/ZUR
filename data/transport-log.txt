@@ -3,6 +3,11 @@
 тегля Zürich Stadelhofen
 тегля Zürich Flughafen
 тегля Zürich, Bahnhofquai/HB
-тегля Zürich, Sihlquai
-общо записи: 80 · влак 40 · трамвай 20 · автобус 20 · международни 0
-записан data/transport.json: 8879 байта
+тегля Zürich, Central
+тегля Zürich, Bellevue
+тегля Zürich, Paradeplatz
+тегля Zürich, Stauffacher
+тегля Zürich, Bahnhof Enge
+тегля Zürich, Carparkplatz Sihlquai
+общо записи: 91 · влак 40 · трамвай 40 · автобус 11 · международни 0
+записан data/transport.json: 10302 байта
