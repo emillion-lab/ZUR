@@ -148,6 +148,7 @@
     open = null;
     var p = document.getElementById('tp-panel');
     if(p) p.classList.remove('on');
+    document.body.classList.remove('tp-open');
     document.querySelectorAll('.tp-btn').forEach(function(b){ b.classList.remove('on'); });
   }
 
@@ -160,6 +161,7 @@
       b.classList.toggle('on', b.id === id);
     });
     document.getElementById('tp-panel').classList.add('on');
+    document.body.classList.add('tp-open');
     render();
     if(kind !== 'flights') load(kind);
   }
@@ -383,13 +385,32 @@
          + '</div>';
   }
 
+
+  // Докато таблото е отворено, останалите бутони служат за затваряне —
+  // панелът покрива екрана и иначе трябва да се цели в малкото ×.
+  function bindClosers(){
+    ['fs-btn','gps-btn','next90-btn','list-btn'].forEach(function(id){
+      var b = document.getElementById(id);
+      if(!b || b.dataset.tpCloser) return;
+      b.dataset.tpCloser = '1';
+      b.addEventListener('click', function(e){
+        if(open){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          close();
+        }
+      }, true);   // capture: изпреварва собственото действие на бутона
+    });
+  }
+
   window.ZURTransportRedraw = render;
 
   function init(){
     css();
     mkPanel();
     mkButtons();
-    setTimeout(mkButtons, 1500);        // app.js може да е пренаписал бутона
+    bindClosers();
+    setTimeout(function(){ mkButtons(); bindClosers(); }, 1500);        // app.js може да е пренаписал бутона
     // отвореното табло се освежава, щом човек се върне в приложението
     document.addEventListener('visibilitychange', function(){
       if(!document.hidden && open && open !== 'flights'){

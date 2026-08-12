@@ -1583,6 +1583,41 @@ body.list-view #zone-sidebar{ flex:1 1 auto !important; overflow-y:auto !importa
   #list-btn    { bottom:348px !important; }
 }
 
+/* ZUR-RAIL-FADE */
+/* ── докато таблото е отворено, колоната стои над него ── */
+body.tp-open #fs-btn, body.tp-open #gps-btn, body.tp-open #next90-btn,
+body.tp-open #flights-btn, body.tp-open #tp-train,
+body.tp-open #tp-bus, body.tp-open #tp-intl, body.tp-open #list-btn{
+  z-index:3400 !important;
+}
+
+/* избраният: вижда се, но пропуска панела под себе си */
+body.tp-open .tp-btn.on{
+  opacity:.72 !important;
+  color:var(--cyan) !important;
+  box-shadow:0 6px 18px rgba(15,27,45,.18), 0 0 0 2px var(--cyan) !important;
+}
+
+/* останалите: едва загатнати, но пак се докосват и затварят */
+body.tp-open .tp-btn:not(.on),
+body.tp-open #fs-btn, body.tp-open #gps-btn,
+body.tp-open #next90-btn, body.tp-open #list-btn{
+  opacity:.26 !important;
+}
+body.tp-open .tp-btn:not(.on):active,
+body.tp-open #fs-btn:active, body.tp-open #gps-btn:active,
+body.tp-open #next90-btn:active, body.tp-open #list-btn:active{
+  opacity:.6 !important;
+}
+
+/* панелът пуска малко от картата да се види, за да е ясно къде сме */
+body.tp-open #tp-panel{
+  background:color-mix(in srgb, var(--bg) 92%, transparent) !important;
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)){
+  body.tp-open #tp-panel{ background:var(--bg) !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1734,7 +1769,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<script src="app.js?v=202608120951"></script>
+<script src="app.js?v=202608121009"></script>
 <script src="transport.js"></script>
 
 <!-- PWA Install Banner -->
