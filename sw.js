@@ -2,12 +2,13 @@
 // Кешира статичните файлове за офлайн работа.
 // Модел преписан от BAK/sw.js, адаптиран за пътищата на ZUR.
 
-const CACHE_NAME = 'zur-taxi-v1';
+const CACHE_NAME = 'zur-taxi-v2';
 const STATIC_FILES = [
   '/ZUR/',
   '/ZUR/index.html',
   '/ZUR/app.js',
   '/ZUR/theme.js',
+  '/ZUR/weather-sky.js',
   '/ZUR/leaflet.min.js',
   '/ZUR/manifest.json',
 ];
@@ -41,9 +42,9 @@ self.addEventListener('fetch', event => {
 
   const dynamicPatterns = [
     'openweathermap.org',
+    'open-meteo.com',
     'aviationstack.com',
     'nominatim.openstreetmap.org',
-    'open-meteo.com',
     'workers.dev',
     'flight-cache.json',
     'config.json',
