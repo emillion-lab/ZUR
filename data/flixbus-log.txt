@@ -1,0 +1,51 @@
+търся идентификатора на Цюрих…
+  Цюрих = 40d8fa3c-8646-11e6-9066-549f350fcb0c
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Milan        40ddcc6e-8646-11e6-9066-549f350fcb0c → 18 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Munich       40d901a5-8646-11e6-9066-549f350fcb0c → 17 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Stuttgart    40d90995-8646-11e6-9066-549f350fcb0c → 6 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Frankfurt    40d90407-8646-11e6-9066-549f350fcb0c → 9 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Paris        40de8964-8646-11e6-9066-549f350fcb0c → 4 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Lyon         40df89c1-8646-11e6-9066-549f350fcb0c → 6 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Vienna       40de1f31-8646-11e6-9066-549f350fcb0c → 18 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Prague       40de1ad1-8646-11e6-9066-549f350fcb0c → 21 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Berlin       40d8f682-8646-11e6-9066-549f350fcb0c → 38 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Belgrade     340bdce6-7eb1-4c50-bd1e-fd43485cdfef → 9 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Zagreb       40dea87d-8646-11e6-9066-549f350fcb0c → 12 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Ljubljana    40de8044-8646-11e6-9066-549f350fcb0c → 12 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Budapest     40de6527-8646-11e6-9066-549f350fcb0c → 15 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Amsterdam    40dde3b8-8646-11e6-9066-549f350fcb0c → 15 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Brussels     40de6287-8646-11e6-9066-549f350fcb0c → 2 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Barcelona    40e086ed-8646-11e6-9066-549f350fcb0c → 11 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Venice       40dea03b-8646-11e6-9066-549f350fcb0c → 28 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Florence     40de71c6-8646-11e6-9066-549f350fcb0c → 17 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Turin        40deee02-8646-11e6-9066-549f350fcb0c → 13 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Sarajevo     b4b1c3c9-608f-4920-9dfc-85762cef4b04 → 5 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Skopje       7c0e2d09-d177-4c0b-a274-051c9c9a6347 → 2 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Sofia        40e09335-8646-11e6-9066-549f350fcb0c → 3 курса
+общо пристигащи: 60
+   04:45 Stuttgart → Sihlquai FlixBus
+   05:50 Milan → Sihlquai FlixBus
+   07:10 Munich → Sihlquai FlixBus
+записан data/flixbus.json: 7802 байта
