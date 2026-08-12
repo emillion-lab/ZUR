@@ -1,32 +1,65 @@
-// Zürich Taxi Radar — разписания по вид транспорт
+// Zürich Taxi Radar — едно табло за всичко, което докарва клиенти
 //
-// Едно табло обслужва четирите бутона. Швейцарският API връща всичко
-// от един endpoint с поле `category`, затова тук няма четири отделни
-// реализации — има един панел и филтър, който се сменя.
+// Четири източника, един панел, един калъп:
+//   ✈️ полети   — от flightDetails на app.js
+//   🚂 влакове  — transport.opendata.ch, на живо
+//   🚌 автобуси — същият API
+//   🌍 междуградски — терминалът на Sihlquai
 //
-// Данните идват от data/transport.json (пълни се от scripts/fetch_transport.py).
+// Защо на живо, а не от готовия файл: пристиганията остаряват за час.
+// Файлът се пълни четири пъти дневно и когато шофьорът го отвори,
+// всичко вече е минало — точно това правеше таблото празно. Швейцарският
+// API позволява заявка направо от браузъра, затова питаме него, а
+// data/transport.json остава само за резерва, ако мрежата откаже.
 (function(){
   'use strict';
 
+  var API = 'https://transport.opendata.ch/v1/stationboard';
+
   var KINDS = {
-    train: { icon:'🚂', title:'Trains',          bottom:240 },
-    tram:  { icon:'🚊', title:'Trams',           bottom:296 },
-    bus:   { icon:'🚌', title:'Buses',           bottom:352 },
-    intl:  { icon:'🌍', title:'Intl. coaches',   bottom:408 }
+    flights: { icon:'✈️', title:'Flight arrivals', gsw:'Aachoendi Flüüg' },
+    train:   { icon:'🚂', title:'Train arrivals',  gsw:'Aachoendi Züg'  },
+    bus:     { icon:'🚌', title:'Bus arrivals',    gsw:'Aachoendi Büs'  },
+    intl:    { icon:'🌍', title:'Intl. coaches',   gsw:'Uslandbüs'      }
   };
 
-  var STATIONS = {
-    hb:'Zürich HB', oerlikon:'Oerlikon', stadelhofen:'Stadelhofen',
-    airport:'Flughafen', quai:'Bahnhofquai', sihlquai:'Sihlquai'
+  // Спирките, от които идват хора с багаж или бързане
+  var STOPS = {
+    train: [
+      ['Zürich HB',           'HB'],
+      ['Zürich Oerlikon',     'Oerlikon'],
+      ['Zürich Stadelhofen',  'Stadelhofen'],
+      ['Zürich Flughafen',    'Flughafen']
+    ],
+    bus: [
+      ['Zürich, Bahnhofquai/HB', 'Bahnhofquai'],
+      ['Zürich, Central',        'Central'],
+      ['Zürich, Bellevue',       'Bellevue']
+    ],
+    intl: [
+      ['Zürich, Carparkplatz Sihlquai', 'Sihlquai']
+    ]
   };
 
-  var DATA = null, open = null, loading = false;
+  var TRAIN_CAT = {S:1,SN:1,IC:1,ICE:1,IR:1,RE:1,R:1,EC:1,TGV:1,RJX:1,NJ:1,PE:1};
+  var BUS_CAT   = {B:1,BUS:1,NFB:1,TRO:1,NFO:1,KB:1};
+
+  var cache = {};          // {kind: {rows, at}}
+  var open = null, busy = false;
+
+  function isGsw(){
+    try { return localStorage.getItem('zur_lang') === 'gsw'; } catch(e){ return false; }
+  }
+  function label(k){
+    return isGsw() ? KINDS[k].gsw : KINDS[k].title;
+  }
 
   function css(){
     if(document.getElementById('tp-css')) return;
     var s = document.createElement('style');
     s.id = 'tp-css';
     s.textContent = [
+      /* бутоните — същият калъп като останалите в колоната */
       '.tp-btn{position:fixed;right:12px;width:48px;height:48px;border-radius:16px;',
       'padding:0;border:0;display:flex;align-items:center;justify-content:center;',
       'font-size:22px;line-height:1;color:var(--text);background:var(--glass);',
@@ -39,57 +72,64 @@
       'body.theme-night .tp-btn{box-shadow:0 6px 20px rgba(0,0,0,.55),',
       '0 1px 0 rgba(255,255,255,.08) inset,0 0 0 1px rgba(34,211,238,.45)}',
       'body.list-view .tp-btn{display:none}',
-      '#tp-panel{display:none;position:fixed;left:8px;right:8px;bottom:12px;z-index:2500;',
-      'max-height:52vh;overflow-y:auto;overscroll-behavior:contain;',
-      'background:var(--glass);border:1px solid var(--glass-edge);border-radius:18px;',
-      'backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);',
-      'box-shadow:0 18px 50px rgba(15,27,45,.22)}',
-      '#tp-panel.on{display:block}',
-      '.tp-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;',
-      'padding:11px 14px;background:var(--glass);backdrop-filter:saturate(180%) blur(18px);',
-      'border-bottom:1px solid var(--glass-edge);border-radius:18px 18px 0 0;',
-      "font:800 15px 'Courier New',monospace;color:var(--cyan);letter-spacing:1px}",
-      '.tp-head .tp-x{margin-left:auto;cursor:pointer;color:var(--muted);font-size:18px;padding:0 4px}',
+
+      /* панелът заема целия екран — на телефон половинчатото е нечетимо */
+      '#tp-panel{display:none;position:fixed;inset:0;z-index:3200;',
+      'background:var(--bg);flex-direction:column}',
+      '#tp-panel.on{display:flex}',
+      '.tp-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;',
+      'padding:14px 16px;border-bottom:1px solid var(--glass-edge);',
+      "font:800 16px 'Courier New',monospace;color:var(--cyan);letter-spacing:1px}",
+      '.tp-head .tp-x{margin-left:auto;cursor:pointer;color:var(--muted);',
+      'font-size:26px;line-height:1;padding:0 6px}',
       '.tp-stamp{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0}',
-      '.tp-row{display:flex;align-items:center;gap:10px;padding:9px 14px;',
+      '.tp-body{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}',
+
+      /* редовете: сега слизащите се открояват, останалите избледняват */
+      '.tp-sec{padding:10px 16px 4px;font:800 11px/1 sans-serif;letter-spacing:1.2px;',
+      'color:var(--muted);text-transform:uppercase}',
+      '.tp-row{display:flex;align-items:center;gap:10px;padding:11px 16px;',
       'border-bottom:1px solid var(--glass-edge)}',
-      '.tp-row:last-child{border-bottom:none}',
-      ".tp-t{font:700 15px 'Courier New',monospace;color:var(--amber);min-width:48px}",
-      '.tp-line{font-weight:800;font-size:14px;min-width:42px;color:var(--text)}',
-      '.tp-to{flex:1;font-size:14px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '.tp-st{font-size:11px;color:var(--muted);display:block;margin-top:1px}',
-      '.tp-plat{font-size:12px;color:var(--muted);min-width:26px;text-align:right}',
-      '.tp-late{color:var(--red);font-size:12px;font-weight:700;margin-left:4px}',
-      '.tp-empty{padding:22px 16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}'
+      '.tp-row.now{background:rgba(220,38,38,.10);border-left:3px solid var(--red)}',
+      'body.theme-night .tp-row.now{background:rgba(248,113,113,.12)}',
+      '.tp-row.past{opacity:.42}',
+      ".tp-t{font:800 15px 'Courier New',monospace;color:var(--amber);min-width:52px}",
+      '.tp-row.now .tp-t{color:var(--red)}',
+      '.tp-line{font-weight:800;font-size:14px;min-width:52px;color:var(--text)}',
+      '.tp-to{flex:1;font-size:15px;color:var(--text);overflow:hidden;',
+      'text-overflow:ellipsis;white-space:nowrap}',
+      '.tp-st{font-size:11px;color:var(--muted);display:block;margin-top:2px}',
+      '.tp-plat{font-size:13px;color:var(--muted);min-width:32px;text-align:right}',
+      '.tp-late{color:var(--red);font-size:12px;font-weight:700;margin-left:3px}',
+      '.tp-empty{padding:40px 20px;text-align:center;color:var(--muted);',
+      'font-size:15px;line-height:1.7}',
+      '.tp-note{padding:12px 16px 24px;font-size:11px;color:var(--muted);text-align:center}'
     ].join('');
     document.head.appendChild(s);
   }
 
   function mkButtons(){
     Object.keys(KINDS).forEach(function(k){
-      if(document.getElementById('tp-' + k)) return;
-      var b = document.createElement('button');
-      b.id = 'tp-' + k;
-      b.className = 'tp-btn';
-      b.style.bottom = KINDS[k].bottom + 'px';
-      b.textContent = KINDS[k].icon;
-      b.title = KINDS[k].title;
-      b.addEventListener('click', function(){ toggle(k); });
-      document.body.appendChild(b);
-    });
-    // на тесни телефони колоната се свива, за да не изяде картата
-    if(window.innerWidth <= 400){
-      var n = 0;
-      Object.keys(KINDS).forEach(function(k){
-        var b = document.getElementById('tp-' + k);
-        if(!b) return;
-        b.style.width = b.style.height = '42px';
-        b.style.fontSize = '19px';
-        b.style.borderRadius = '13px';
-        b.style.bottom = (214 + n * 50) + 'px';
-        n++;
+      var id = k === 'flights' ? 'flights-btn' : 'tp-' + k;
+      var b = document.getElementById(id);
+      if(b && b.dataset.tpBound) return;
+      if(!b){
+        b = document.createElement('button');
+        b.id = id;
+        b.className = 'tp-btn';
+        b.textContent = KINDS[k].icon;
+        document.body.appendChild(b);
+      } else {
+        b.classList.add('tp-btn');
+        b.onclick = null;              // маха стария inline onclick
+      }
+      b.title = label(k);
+      b.dataset.tpBound = '1';
+      b.addEventListener('click', function(e){
+        e.preventDefault();
+        toggle(k);
       });
-    }
+    });
   }
 
   function mkPanel(){
@@ -98,8 +138,8 @@
     p.id = 'tp-panel';
     p.innerHTML = '<div class="tp-head"><span id="tp-title">—</span>'
                 + '<span class="tp-stamp" id="tp-stamp"></span>'
-                + '<span class="tp-x" id="tp-close">✕</span></div>'
-                + '<div id="tp-body"></div>';
+                + '<span class="tp-x" id="tp-close">×</span></div>'
+                + '<div class="tp-body" id="tp-body"></div>';
     document.body.appendChild(p);
     document.getElementById('tp-close').addEventListener('click', close);
   }
@@ -111,79 +151,118 @@
     document.querySelectorAll('.tp-btn').forEach(function(b){ b.classList.remove('on'); });
   }
 
+  // второто докосване прибира панела — иначе трябва да се цели в ×
   function toggle(kind){
     if(open === kind){ close(); return; }
     open = kind;
+    var id = kind === 'flights' ? 'flights-btn' : 'tp-' + kind;
     document.querySelectorAll('.tp-btn').forEach(function(b){
-      b.classList.toggle('on', b.id === 'tp-' + kind);
+      b.classList.toggle('on', b.id === id);
     });
     document.getElementById('tp-panel').classList.add('on');
     render();
-    if(!DATA && !loading) load();
+    if(kind !== 'flights') load(kind);
   }
 
-  function fmtStamp(iso){
-    if(!iso) return '';
-    var d = new Date(iso);
-    if(isNaN(d)) return '';
-    var mins = Math.round((Date.now() - d.getTime()) / 60000);
-    if(mins < 2) return 'just now';
-    if(mins < 60) return mins + ' min ago';
-    return Math.round(mins / 60) + ' h ago';
+  // ── теглене на живо ──
+  function fetchStop(name, key, kind){
+    var u = API + '?station=' + encodeURIComponent(name)
+          + '&limit=15&type=arrival';
+    return fetch(u).then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if(!d || !d.stationboard) return [];
+        return d.stationboard.map(function(e){
+          var stop = e.stop || {};
+          var when = stop.arrival || stop.departure || '';
+          if(!when) return null;
+          var cat = (e.category || '').toUpperCase();
+          if(kind === 'train' && !TRAIN_CAT[cat]) return null;
+          if((kind === 'bus' || kind === 'intl') && !BUS_CAT[cat]) return null;
+          var pr = (stop.prognosis || {});
+          var pw = pr.arrival || pr.departure;
+          var delay = 0;
+          if(pw && pw !== when){
+            delay = Math.round((new Date(pw) - new Date(when)) / 60000);
+          }
+          return {
+            t: when.slice(11,16),
+            ts: (stop.arrivalTimestamp || stop.departureTimestamp || 0) * 1000,
+            cat: e.category || '',
+            line: e.number || '',
+            from: (e.from || e.to || '').trim(),
+            plat: (stop.platform || '').trim(),
+            delay: delay,
+            st: key
+          };
+        }).filter(Boolean);
+      }).catch(function(){ return []; });
   }
 
-  function render(){
-    if(!open) return;
-    var body = document.getElementById('tp-body');
-    var head = document.getElementById('tp-title');
-    var stamp = document.getElementById('tp-stamp');
-    var lbl = KINDS[open].title;
-    if(window.ZURLang){
-      var map = {train:'trains', tram:'trams', bus:'buses', intl:'intl'};
-      lbl = window.ZURLang.t(map[open]);
-    }
-    head.textContent = KINDS[open].icon + ' ' + lbl.toUpperCase();
-
-    if(loading){
-      body.innerHTML = '<div class="tp-empty">'
-        + (window.ZURLang ? window.ZURLang.t('loading') : 'Loading…')
-        + '</div>';
-      return;
-    }
-    if(!DATA){
-      body.innerHTML = '<div class="tp-empty">No schedule data yet.<br>'
-                     + 'It is fetched a few times a day.</div>';
-      return;
-    }
-
-    stamp.textContent = fmtStamp(DATA.generated);
-
-    var rows = (DATA[open] || []).filter(function(r){
-      // миналите тръгвания не помагат на никого
-      return !r.ts || r.ts * 1000 > Date.now() - 120000;
-    });
-
-    if(!rows.length){
-      body.innerHTML = '<div class="tp-empty">'
-        + (window.ZURLang ? window.ZURLang.t('nothing') : 'Nothing arriving right now.')
-        + '</div>';
-      return;
-    }
-
-    body.innerHTML = rows.slice(0, 30).map(function(r){
-      var late = r.delay > 0 ? '<span class="tp-late">+' + r.delay + '</span>' : '';
-      var st = STATIONS[r.st] || '';
-      return '<div class="tp-row">'
-           + '<span class="tp-t">' + r.t + late + '</span>'
-           + '<span class="tp-line">' + (r.cat || '') + (r.line || '') + '</span>'
-           + '<span class="tp-to">' + esc(r.from || r.to)
-           + (st ? '<span class="tp-st">'
-             + (window.ZURLang ? window.ZURLang.t('from') : 'from')
-             + ' ' + st + '</span>' : '') + '</span>'
-           + '<span class="tp-plat">' + (r.plat || '') + '</span>'
-           + '</div>';
-    }).join('');
+  function load(kind){
+    var c = cache[kind];
+    if(c && Date.now() - c.at < 90000){ render(); return; }   // 90 с е достатъчно свежо
+    busy = true; render();
+    Promise.all(STOPS[kind].map(function(s){
+      return fetchStop(s[0], s[1], kind);
+    })).then(function(lists){
+      var rows = [];
+      lists.forEach(function(l){ rows = rows.concat(l); });
+      rows.sort(function(a,b){ return a.ts - b.ts; });
+      // една линия от една спирка се повтаря; държим по две
+      var seen = {}, keep = [];
+      rows.forEach(function(r){
+        var sig = r.st + '|' + r.cat + r.line + '|' + r.from;
+        seen[sig] = (seen[sig] || 0) + 1;
+        if(seen[sig] <= 2) keep.push(r);
+      });
+      cache[kind] = { rows: keep, at: Date.now(), live: keep.length > 0 };
+      busy = false;
+      if(!keep.length) fallback(kind);
+      else render();
+    }).catch(function(){ busy = false; fallback(kind); });
   }
+
+  // ако мрежата или API-то откажат — показваме последното изтеглено от файла
+  function fallback(kind){
+    fetch('data/transport.json', {cache:'no-cache'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){
+        if(!j) { render(); return; }
+        var rows = (j[kind] || []).map(function(r){
+          return {t:r.t, ts:(r.ts||0)*1000, cat:r.cat, line:r.line,
+                  from:r.from || r.to || '', plat:r.plat, delay:r.delay, st:r.st};
+        });
+        cache[kind] = { rows: rows, at: new Date(j.generated).getTime(), live:false };
+        render();
+      })
+      .catch(function(){ render(); });
+  }
+
+  // ── полетите идват от app.js ──
+  function flightRows(){
+    var fd = window.flightDetails || [];
+    var now = new Date();
+    var nowMin = ((now.getUTCHours() + 2) % 24) * 60 + now.getUTCMinutes();
+    return fd.map(function(f){
+      var from = f.exitFromH * 60 + f.exitFromM;
+      var to   = f.exitToH   * 60 + f.exitToM;
+      var adj = function(m){ return m < 300 ? m + 1440 : m; };
+      var n = adj(nowMin), a = adj(from), b = adj(to);
+      return {
+        t: pad(f.exitFromH) + ':' + pad(f.exitFromM),
+        t2: pad(f.exitToH) + ':' + pad(f.exitToM),
+        ts: 0,
+        sortKey: a,
+        cat: '', line: f.fn,
+        from: f.depAirport || '',
+        plat: f.nonSchengen ? '🛂' : '🇪🇺',
+        delay: 0, st: '',
+        now: a <= n && b >= n,
+        past: b < n
+      };
+    }).sort(function(x,y){ return x.sortKey - y.sortKey; });
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
 
   function esc(s){
     return String(s || '').replace(/[&<>"]/g, function(c){
@@ -191,27 +270,131 @@
     });
   }
 
-  function load(){
-    loading = true;
-    render();
-    fetch('data/transport.json', {cache:'no-cache'})
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){ DATA = j; loading = false; render(); })
-      .catch(function(){ loading = false; render(); });
+  function render(){
+    if(!open) return;
+    var body = document.getElementById('tp-body');
+    var head = document.getElementById('tp-title');
+    var stamp = document.getElementById('tp-stamp');
+    head.textContent = KINDS[open].icon + '  ' + label(open).toUpperCase();
+
+    if(open === 'flights'){
+      stamp.textContent = '';
+      renderFlights(body);
+      return;
+    }
+
+    if(busy && !cache[open]){
+      stamp.textContent = '';
+      body.innerHTML = '<div class="tp-empty">…</div>';
+      return;
+    }
+
+    var c = cache[open];
+    if(!c || !c.rows.length){
+      stamp.textContent = '';
+      body.innerHTML = '<div class="tp-empty">'
+        + (isGsw() ? 'Grad chunnt nüt aa.' : 'Nothing arriving right now.')
+        + '</div>';
+      return;
+    }
+
+    stamp.textContent = c.live ? 'live' : 'cached';
+
+    var now = Date.now();
+    var html = '';
+    var wroteNow = false, wroteLater = false;
+
+    c.rows.forEach(function(r){
+      var mins = r.ts ? Math.round((r.ts - now) / 60000) : null;
+      var isNow  = mins !== null && mins >= -5 && mins <= 5;
+      var isPast = mins !== null && mins < -5;
+      if(isPast) return;                       // минали пристигания не помагат
+
+      if(isNow && !wroteNow){
+        html += '<div class="tp-sec">' + (isGsw() ? 'Jetzt' : 'Arriving now') + '</div>';
+        wroteNow = true;
+      } else if(!isNow && !wroteLater){
+        html += '<div class="tp-sec">' + (isGsw() ? 'Chunnt' : 'Next') + '</div>';
+        wroteLater = true;
+      }
+
+      var late = r.delay > 0 ? '<span class="tp-late">+' + r.delay + '</span>' : '';
+      var inTxt = mins !== null && mins > 0 ? ' · ' + mins + ' min' : '';
+      html += '<div class="tp-row' + (isNow ? ' now' : '') + '">'
+            + '<span class="tp-t">' + r.t + late + '</span>'
+            + '<span class="tp-line">' + esc(r.cat) + esc(r.line) + '</span>'
+            + '<span class="tp-to">' + esc(r.from)
+            + '<span class="tp-st">' + esc(r.st) + inTxt + '</span></span>'
+            + '<span class="tp-plat">' + esc(r.plat) + '</span>'
+            + '</div>';
+    });
+
+    if(!html) html = '<div class="tp-empty">'
+      + (isGsw() ? 'Grad chunnt nüt aa.' : 'Nothing arriving right now.') + '</div>';
+
+    body.innerHTML = html + '<div class="tp-note">transport.opendata.ch</div>';
+  }
+
+  function renderFlights(body){
+    var rows = flightRows();
+    if(!rows.length){
+      body.innerHTML = '<div class="tp-empty">'
+        + (isGsw() ? 'Kei Flugdate.' : 'No flight data.') + '</div>';
+      return;
+    }
+    var html = '';
+    var wroteNow = false, wroteNext = false, wrotePast = false;
+    // първо тези, които слизат сега — те са същината
+    rows.forEach(function(r){
+      if(!r.now) return;
+      if(!wroteNow){
+        html += '<div class="tp-sec">' + (isGsw() ? 'Stiiged jetzt us' : 'Exiting now') + '</div>';
+        wroteNow = true;
+      }
+      html += flightRow(r, 'now');
+    });
+    rows.forEach(function(r){
+      if(r.now || r.past) return;
+      if(!wroteNext){
+        html += '<div class="tp-sec">' + (isGsw() ? 'Chunnt' : 'Upcoming') + '</div>';
+        wroteNext = true;
+      }
+      html += flightRow(r, '');
+    });
+    rows.slice().reverse().forEach(function(r){
+      if(!r.past) return;
+      if(!wrotePast){
+        html += '<div class="tp-sec">' + (isGsw() ? 'Scho use' : 'Already out') + '</div>';
+        wrotePast = true;
+      }
+      if((html.match(/tp-row past/g) || []).length < 6) html += flightRow(r, 'past');
+    });
+    body.innerHTML = html
+      + '<div class="tp-note">🇪🇺 Schengen +15–25 min · 🛂 Non-Schengen +25–35 min</div>';
+  }
+
+  function flightRow(r, cls){
+    return '<div class="tp-row ' + cls + '">'
+         + '<span class="tp-t">' + r.t + '</span>'
+         + '<span class="tp-line">' + esc(r.line) + '</span>'
+         + '<span class="tp-to">' + esc(r.from)
+         + '<span class="tp-st">' + r.t + '–' + r.t2 + '</span></span>'
+         + '<span class="tp-plat">' + r.plat + '</span>'
+         + '</div>';
   }
 
   window.ZURTransportRedraw = render;
 
   function init(){
     css();
-    mkButtons();
     mkPanel();
-    load();
-    // разписанието остарява; освежаваме, когато човек се върне в приложението
+    mkButtons();
+    setTimeout(mkButtons, 1500);        // app.js може да е пренаписал бутона
+    // отвореното табло се освежава, щом човек се върне в приложението
     document.addEventListener('visibilitychange', function(){
-      if(!document.hidden && DATA){
-        var age = Date.now() - new Date(DATA.generated).getTime();
-        if(age > 20 * 60000) load();
+      if(!document.hidden && open && open !== 'flights'){
+        delete cache[open];
+        load(open);
       }
     });
   }
