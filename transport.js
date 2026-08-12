@@ -137,10 +137,17 @@
     var body = document.getElementById('tp-body');
     var head = document.getElementById('tp-title');
     var stamp = document.getElementById('tp-stamp');
-    head.textContent = KINDS[open].icon + ' ' + KINDS[open].title.toUpperCase();
+    var lbl = KINDS[open].title;
+    if(window.ZURLang){
+      var map = {train:'trains', tram:'trams', bus:'buses', intl:'intl'};
+      lbl = window.ZURLang.t(map[open]);
+    }
+    head.textContent = KINDS[open].icon + ' ' + lbl.toUpperCase();
 
     if(loading){
-      body.innerHTML = '<div class="tp-empty">Loading…</div>';
+      body.innerHTML = '<div class="tp-empty">'
+        + (window.ZURLang ? window.ZURLang.t('loading') : 'Loading…')
+        + '</div>';
       return;
     }
     if(!DATA){
@@ -157,7 +164,9 @@
     });
 
     if(!rows.length){
-      body.innerHTML = '<div class="tp-empty">Nothing scheduled right now.</div>';
+      body.innerHTML = '<div class="tp-empty">'
+        + (window.ZURLang ? window.ZURLang.t('nothing') : 'Nothing arriving right now.')
+        + '</div>';
       return;
     }
 
@@ -167,8 +176,10 @@
       return '<div class="tp-row">'
            + '<span class="tp-t">' + r.t + late + '</span>'
            + '<span class="tp-line">' + (r.cat || '') + (r.line || '') + '</span>'
-           + '<span class="tp-to">' + esc(r.to)
-           + (st ? '<span class="tp-st">from ' + st + '</span>' : '') + '</span>'
+           + '<span class="tp-to">' + esc(r.from || r.to)
+           + (st ? '<span class="tp-st">'
+             + (window.ZURLang ? window.ZURLang.t('from') : 'from')
+             + ' ' + st + '</span>' : '') + '</span>'
            + '<span class="tp-plat">' + (r.plat || '') + '</span>'
            + '</div>';
     }).join('');
@@ -188,6 +199,8 @@
       .then(function(j){ DATA = j; loading = false; render(); })
       .catch(function(){ loading = false; render(); });
   }
+
+  window.ZURTransportRedraw = render;
 
   function init(){
     css();
