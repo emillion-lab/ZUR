@@ -1036,7 +1036,7 @@ async function loadWeather(){
     return;
   }
   try{
-    const r=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=47.3769&lon=8.5417&units=metric&lang=bg&appid=${OWM_KEY}`);
+    const r=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=47.3769&lon=8.5417&units=metric&lang=${(window.ZURLang&&window.ZURLang.get()==='gsw')?'de':'en'}&appid=${OWM_KEY}`);
     const d=await r.json();
     if(d.cod!==200) throw 0;
     const w=d.weather[0], temp=Math.round(d.main.temp), wind=d.wind?.speed||0;
@@ -1527,3 +1527,9 @@ if(uiLang==='gsw')setInterval(()=>gswWalk(document.body),1000);
   b.onclick=()=>{localStorage.setItem('zur_lang',uiLang==='gsw'?'en':'gsw');location.reload();};
   document.body.appendChild(b);
 })();
+
+// картата вече е гъвкава по височина — премерва се при въртене
+window.ZURMapResize = function(){ try{ map.invalidateSize(); }catch(e){} };
+window.addEventListener('resize', function(){ setTimeout(window.ZURMapResize, 120); });
+window.addEventListener('orientationchange', function(){ setTimeout(window.ZURMapResize, 300); });
+setTimeout(window.ZURMapResize, 400);
