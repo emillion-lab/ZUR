@@ -709,11 +709,34 @@ body.list-view #toggle-map-btn {
   --bg:#f5f7fa; --surface:#ffffff; --border:#d0d7e3;
   --amber:#f59e0b; --cyan:#0284c7; --green:#22c55e;
   --red:#ef4444; --orange:#f97316; --muted:#64748b; --text:#1e293b;
+  --glass:rgba(255,255,255,.62); --glass-edge:rgba(15,27,45,.10);
+  --card:0 1px 2px rgba(15,27,45,.08), 0 8px 22px rgba(15,27,45,.07);
+  --ring:rgba(3,105,161,.22);
 }
 body.theme-night {
   --bg:#0a0e1a; --surface:#0f1729; --border:#1e2b42;
   --amber:#fbbf24; --cyan:#22d3ee; --green:#34d399;
   --red:#f87171; --orange:#fb923c; --muted:#8ea0b8; --text:#e2e8f0;
+  --glass:rgba(12,22,38,.58); --glass-edge:rgba(34,211,238,.20);
+  --card:0 2px 8px rgba(0,0,0,.55), 0 0 24px rgba(34,211,238,.09);
+  --ring:rgba(34,211,238,.38);
+}
+/* ── BAK-стил стъклени бутони: замазано стъкло + cyan сияние нощем ── */
+#gps-btn, #fs-btn, #bakshish-btn, #next90-btn, #theme-btn {
+  background:var(--glass) !important;
+  border:1.5px solid var(--glass-edge) !important;
+  box-shadow:var(--card) !important;
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  transition:box-shadow .3s ease, border-color .3s ease, transform .2s ease;
+}
+body.theme-night #gps-btn, body.theme-night #fs-btn,
+body.theme-night #bakshish-btn, body.theme-night #next90-btn {
+  color:var(--cyan) !important;
+}
+body.theme-night #gps-btn.active, body.theme-night #fs-btn.active,
+body.theme-night #next90-btn.active {
+  box-shadow:0 2px 8px rgba(0,0,0,.55), 0 0 22px var(--ring) !important;
 }
 body{ transition:background-color .3s ease, color .3s ease; }
 #theme-btn{
