@@ -169,7 +169,8 @@
     document.getElementById('tp-panel').classList.add('on');
     document.body.classList.add('tp-open');
     render();
-    if(kind !== 'flights') load(kind);
+    if(kind === 'intl') loadFlix();
+    else if(kind !== 'flights') load(kind);
   }
 
   // ── теглене на живо ──
@@ -297,15 +298,44 @@
   function emptyText(){
     if(open === 'intl'){
       return isGsw()
-        ? 'Kei Uslandbüs im Fahrplaa.<br><span style="font-size:12px">'
-          + 'FlixBus &amp; Co. gänd ihri Zite nöd a d\u2019SBB wiiter.<br>'
+        ? 'Hüt chunnt kei Uslandbus meh.<br><span style="font-size:12px">'
           + 'Terminal: Carparkplatz Sihlquai</span>'
-        : 'International coaches are not in the Swiss timetable.'
-          + '<br><span style="font-size:12px">FlixBus and others do not publish '
-          + 'to SBB, so nothing can be shown here.<br>'
+        : 'No more coaches arriving today.'
+          + '<br><span style="font-size:12px">'
           + 'Terminal: Carparkplatz Sihlquai, next to the main station</span>';
     }
     return isGsw() ? 'Grad chunnt nüt aa.' : 'Nothing arriving right now.';
+  }
+
+
+  // INTL-FLIX — международните идват от собствения ни файл, защото
+  // швейцарското разписание не ги съдържа. Файлът се пълни четири пъти
+  // дневно от scripts/fetch_flixbus.py.
+  function loadFlix(){
+    var c = cache.intl;
+    if(c && Date.now() - c.at < 300000){ render(); return; }
+    busy = true; render();
+    fetch('data/flixbus.json', {cache:'no-cache'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){
+        busy = false;
+        if(!j || !j.arrivals){ cache.intl = {rows:[], at:Date.now(), live:false}; render(); return; }
+        var rows = j.arrivals.map(function(r){
+          return {
+            t: r.t,
+            ts: (r.ts || 0) * 1000,
+            cat: '',
+            line: r.operator || 'FlixBus',
+            from: r.from + (r.transfers ? ' · ' + r.transfers + '×' : ''),
+            plat: r.station === 'Sihlquai' ? '' : (r.station || ''),
+            delay: 0,
+            st: r.station || 'Sihlquai'
+          };
+        });
+        cache.intl = { rows: rows, at: new Date(j.generated).getTime(), live: false };
+        render();
+      })
+      .catch(function(){ busy = false; render(); });
   }
 
   function render(){
@@ -450,7 +480,7 @@
     document.addEventListener('visibilitychange', function(){
       if(!document.hidden && open && open !== 'flights'){
         delete cache[open];
-        load(open);
+        if(open === 'intl') loadFlix(); else load(open);
       }
     });
   }
