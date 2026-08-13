@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 """Събития в Цюрих — кога тълпа излиза на улицата.
 
-За таксито значение има не самото събитие, а краят му: три хиляди души
-излизат от Hallenstadion в 22:40 и половината търсят превоз. Затова се
-пази часът на започване, очакваната продължителност и мястото.
+За таксито значение има краят на събитието: три хиляди души излизат от
+Hallenstadion в 22:40 и половината търсят превоз. Затова се пази часът
+на започване плюс очаквана продължителност според залата.
 
-Източници — залите, които събират хора наведнъж:
-  · Hallenstadion      (~13 000) концерти, спорт
-  · Letzigrund         (~26 000) футбол, лека атлетика, големи концерти
-  · Opernhaus          (~1 100)  опера и балет
-  · Schauspielhaus     (~750)    театър
-  · Kaufleuten / X-TRA (~1 500)  клубни вечери
-
-Всеки източник е отделна функция. Ако един се счупи, останалите работят
-и това личи в лога.
+Първият опит четеше HTML с регулярни изрази и хвана нула — страниците се
+градят от JavaScript и разметката се мени. Затова тук се чете JSON-LD:
+schema.org/Event, вграден в <script type="application/ld+json">. Този
+стандарт го слагат почти всички, за да излизат в Google, и се променя
+далеч по-рядко от разметката.
 
 Изход: data/events.json
   {"generated":..., "events":[{d,t,end,name,venue,lat,lng,size,url}]}
@@ -25,33 +21,38 @@ import sys
 import time
 import datetime
 import urllib.request
-import html as htmllib
 
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/120.0 Safari/537.36')
 
-VENUES = {
-    'hallenstadion': {
-        'name': 'Hallenstadion', 'lat': 47.4108, 'lng': 8.5510,
-        'size': 13000, 'dur': 165,
-    },
-    'letzigrund': {
-        'name': 'Letzigrund', 'lat': 47.3828, 'lng': 8.5036,
-        'size': 26000, 'dur': 150,
-    },
-    'opernhaus': {
-        'name': 'Opernhaus', 'lat': 47.3650, 'lng': 8.5460,
-        'size': 1100, 'dur': 180,
-    },
-    'schauspielhaus': {
-        'name': 'Schauspielhaus', 'lat': 47.3700, 'lng': 8.5487,
-        'size': 750, 'dur': 150,
-    },
-    'kaufleuten': {
-        'name': 'Kaufleuten', 'lat': 47.3719, 'lng': 8.5364,
-        'size': 1500, 'dur': 300,
-    },
-}
+# Залата определя колко хора излизат наведнъж и колко трае събитието.
+# Разпознава се по името на мястото в самото събитие.
+VENUES = [
+    ('hallenstadion', 'Hallenstadion',  47.4108, 8.5510, 13000, 165),
+    ('letzigrund',    'Letzigrund',     47.3828, 8.5036, 26000, 150),
+    ('opernhaus',     'Opernhaus',      47.3650, 8.5460,  1100, 180),
+    ('schauspielhaus','Schauspielhaus', 47.3700, 8.5487,   750, 150),
+    ('kaufleuten',    'Kaufleuten',     47.3719, 8.5364,  1500, 300),
+    ('x-tra',         'X-TRA',          47.3822, 8.5300,  1500, 300),
+    ('volkshaus',     'Volkshaus',      47.3757, 8.5297,  1400, 180),
+    ('tonhalle',      'Tonhalle',       47.3660, 8.5406,  1400, 150),
+    ('kongresshaus',  'Kongresshaus',   47.3657, 8.5364,  1900, 165),
+    ('theater 11',    'Theater 11',     47.4102, 8.5527,  1500, 165),
+    ('samsung hall',  'Samsung Hall',   47.4028, 8.6073,  1900, 180),
+    ('swiss life',    'Swiss Life Hall',47.4108, 8.5510, 13000, 165),
+]
+DEFAULT = ('Zürich', 47.3769, 8.5417, 500, 150)
+
+SOURCES = [
+    'https://www.hallenstadion.ch/en/events',
+    'https://www.hallenstadion.ch/de/veranstaltungen',
+    'https://www.opernhaus.ch/en/schedule/',
+    'https://www.schauspielhaus.ch/en/schedule',
+    'https://www.kaufleuten.ch/events/',
+    'https://www.x-tra.ch/programm',
+    'https://www.tonhalle-orchester.ch/en/concerts/',
+    'https://www.zuerich.com/en/visit/events',
+]
 
 
 def fetch(url, tries=2):
@@ -64,182 +65,155 @@ def fetch(url, tries=2):
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
                 raw = r.read()
-                for enc in ('utf-8', 'iso-8859-1', 'cp1252'):
-                    try:
-                        return raw.decode(enc)
-                    except UnicodeDecodeError:
-                        continue
-                return raw.decode('utf-8', 'replace')
+                try:
+                    return raw.decode('utf-8')
+                except UnicodeDecodeError:
+                    return raw.decode('iso-8859-1', 'replace')
         except Exception as ex:
             if i == tries - 1:
-                print('    неуспех:', type(ex).__name__, str(ex)[:110])
+                print('    неуспех:', type(ex).__name__, str(ex)[:100])
                 return ''
             time.sleep(3)
     return ''
 
 
-def clean(s):
-    s = re.sub(r'<[^>]+>', ' ', s or '')
-    s = htmllib.unescape(s)
-    return re.sub(r'\s+', ' ', s).strip()
+def jsonld_blocks(html):
+    """Вади всички <script type="application/ld+json"> от страницата."""
+    out = []
+    for m in re.finditer(
+            r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+            html, re.S | re.I):
+        txt = m.group(1).strip()
+        # някои сайтове слагат по няколко обекта или коментари вътре
+        txt = re.sub(r'^\s*//.*$', '', txt, flags=re.M)
+        try:
+            out.append(json.loads(txt))
+        except json.JSONDecodeError:
+            continue
+    return out
 
 
-def end_time(day, hhmm, minutes):
-    try:
-        h, m = [int(x) for x in hhmm.split(':')]
-    except ValueError:
-        return ''
-    start = datetime.datetime.combine(day, datetime.time(h, m))
-    return (start + datetime.timedelta(minutes=minutes)).strftime('%H:%M')
-
-
-def add(out, key, day, t, name, url=''):
-    v = VENUES[key]
-    if not t or not name:
+def walk_events(node, found):
+    """Обхожда JSON-LD и събира всичко от тип Event."""
+    if isinstance(node, list):
+        for n in node:
+            walk_events(n, found)
         return
-    out.append({
-        'd': day.isoformat(),
-        't': t,
-        'end': end_time(day, t, v['dur']),
-        'name': name[:90],
-        'venue': v['name'],
-        'lat': v['lat'], 'lng': v['lng'],
-        'size': v['size'],
-        'url': url,
-    })
+    if not isinstance(node, dict):
+        return
+
+    t = node.get('@type') or node.get('type') or ''
+    types = t if isinstance(t, list) else [t]
+    if any('event' in str(x).lower() for x in types):
+        found.append(node)
+
+    for key in ('@graph', 'itemListElement', 'item', 'subEvent', 'events'):
+        if key in node:
+            walk_events(node[key], found)
 
 
-# ── Hallenstadion ──────────────────────────────────────────────
-def scrape_hallenstadion(out):
-    h = fetch('https://www.hallenstadion.ch/en/events')
-    if not h:
-        return 0
-    n = 0
-    # блокове с дата и заглавие; структурата се мени, затова се търси
-    # съчетание от дата и час, а не точен клас
-    for m in re.finditer(
-            r'(\d{1,2})\.(\d{1,2})\.(\d{4})(.{0,400}?)(\d{1,2}[:.]\d{2})',
-            h, re.S):
-        d, mo, y, mid, t = m.groups()
-        try:
-            day = datetime.date(int(y), int(mo), int(d))
-        except ValueError:
-            continue
-        if day < datetime.date.today():
-            continue
-        title = clean(mid)[:90]
-        if len(title) < 3:
-            continue
-        add(out, 'hallenstadion', day, t.replace('.', ':'), title)
-        n += 1
-        if n >= 25:
-            break
-    return n
+def venue_of(ev):
+    """Познава залата по мястото; ако не успее — общ център."""
+    loc = ev.get('location') or {}
+    if isinstance(loc, list):
+        loc = loc[0] if loc else {}
+    name = ''
+    if isinstance(loc, dict):
+        name = str(loc.get('name') or '')
+    blob = (name + ' ' + str(ev.get('name') or '')).lower()
+
+    for key, disp, lat, lng, size, dur in VENUES:
+        if key in blob:
+            return disp, lat, lng, size, dur
+
+    # координати от самото събитие, ако ги дава
+    if isinstance(loc, dict):
+        geo = loc.get('geo') or {}
+        if isinstance(geo, dict):
+            try:
+                return (name or DEFAULT[0], float(geo['latitude']),
+                        float(geo['longitude']), DEFAULT[3], DEFAULT[4])
+            except (KeyError, TypeError, ValueError):
+                pass
+    return (name or DEFAULT[0],) + DEFAULT[1:]
 
 
-# ── Letzigrund ─────────────────────────────────────────────────
-def scrape_letzigrund(out):
-    h = fetch('https://www.stadion-letzigrund.ch/veranstaltungen')
-    if not h:
-        return 0
-    n = 0
-    for m in re.finditer(
-            r'(\d{1,2})\.\s*(\w+)\s*(\d{4})(.{0,300}?)(\d{1,2}[:.]\d{2})',
-            h, re.S):
-        d, mon, y, mid, t = m.groups()
-        mo = month_num(mon)
-        if not mo:
-            continue
-        try:
-            day = datetime.date(int(y), mo, int(d))
-        except ValueError:
-            continue
-        if day < datetime.date.today():
-            continue
-        title = clean(mid)[:90]
-        if len(title) < 3:
-            continue
-        add(out, 'letzigrund', day, t.replace('.', ':'), title)
-        n += 1
-        if n >= 15:
-            break
-    return n
-
-
-# ── Opernhaus ──────────────────────────────────────────────────
-def scrape_opernhaus(out):
-    h = fetch('https://www.opernhaus.ch/en/schedule/')
-    if not h:
-        return 0
-    n = 0
-    for m in re.finditer(
-            r'(\d{4})-(\d{2})-(\d{2})(.{0,300}?)(\d{1,2}[:.]\d{2})',
-            h, re.S):
-        y, mo, d, mid, t = m.groups()
-        try:
-            day = datetime.date(int(y), int(mo), int(d))
-        except ValueError:
-            continue
-        if day < datetime.date.today():
-            continue
-        title = clean(mid)[:90]
-        if len(title) < 3:
-            continue
-        add(out, 'opernhaus', day, t.replace('.', ':'), title)
-        n += 1
-        if n >= 25:
-            break
-    return n
-
-
-MONTHS = {
-    'januar':1, 'january':1, 'jan':1, 'februar':2, 'february':2, 'feb':2,
-    'märz':3, 'maerz':3, 'march':3, 'mär':3, 'mar':3,
-    'april':4, 'apr':4, 'mai':5, 'may':5, 'juni':6, 'june':6, 'jun':6,
-    'juli':7, 'july':7, 'jul':7, 'august':8, 'aug':8,
-    'september':9, 'sept':9, 'sep':9, 'oktober':10, 'october':10, 'okt':10,
-    'november':11, 'nov':11, 'dezember':12, 'december':12, 'dez':12, 'dec':12,
-}
-
-
-def month_num(s):
-    return MONTHS.get((s or '').strip().lower())
+def parse_start(ev):
+    s = ev.get('startDate') or ev.get('startdate') or ''
+    if not s:
+        return None, None
+    s = str(s).strip()
+    try:
+        dt = datetime.datetime.fromisoformat(s.replace('Z', '+00:00'))
+    except ValueError:
+        m = re.match(r'(\d{4})-(\d{2})-(\d{2})[T ]?(\d{2})?:?(\d{2})?', s)
+        if not m:
+            return None, None
+        y, mo, d, h, mi = m.groups()
+        dt = datetime.datetime(int(y), int(mo), int(d),
+                               int(h or 20), int(mi or 0))
+    return dt.date(), dt.strftime('%H:%M')
 
 
 def main():
-    out = []
-    jobs = [
-        ('Hallenstadion',  scrape_hallenstadion),
-        ('Letzigrund',     scrape_letzigrund),
-        ('Opernhaus',      scrape_opernhaus),
-    ]
-    for name, fn in jobs:
-        print('тегля', name)
-        try:
-            got = fn(out)
-        except Exception as ex:
-            print('    счупен парсер:', type(ex).__name__, str(ex)[:110])
-            got = 0
-        print('   →', got, 'събития')
-        time.sleep(1.5)
+    raw = []
+    for url in SOURCES:
+        short = url.split('/')[2]
+        print('тегля', short)
+        html = fetch(url)
+        if not html:
+            print('   → празно')
+            continue
+        blocks = jsonld_blocks(html)
+        found = []
+        for b in blocks:
+            walk_events(b, found)
+        print('   → %d JSON-LD блока, %d събития' % (len(blocks), len(found)))
+        raw += found
+        time.sleep(1.2)
 
-    # едно събитие се появява по няколко пъти при широкия израз
+    today = datetime.date.today()
+    limit = today + datetime.timedelta(days=21)
+
+    out = []
+    for ev in raw:
+        day, t = parse_start(ev)
+        if not day or not t:
+            continue
+        if not (today <= day <= limit):
+            continue
+        name = str(ev.get('name') or '').strip()
+        if len(name) < 2:
+            continue
+        vname, lat, lng, size, dur = venue_of(ev)
+        try:
+            h, mi = [int(x) for x in t.split(':')]
+            end = (datetime.datetime.combine(day, datetime.time(h, mi))
+                   + datetime.timedelta(minutes=dur)).strftime('%H:%M')
+        except ValueError:
+            end = ''
+        url = ev.get('url') or ''
+        if isinstance(url, list):
+            url = url[0] if url else ''
+        out.append({
+            'd': day.isoformat(), 't': t, 'end': end,
+            'name': name[:90], 'venue': vname[:40],
+            'lat': round(lat, 5), 'lng': round(lng, 5),
+            'size': size, 'url': str(url)[:200],
+        })
+
     seen, keep = set(), []
     for e in sorted(out, key=lambda x: (x['d'], x['t'])):
-        sig = (e['d'], e['t'], e['venue'])
+        sig = (e['d'], e['t'], e['venue'], e['name'][:30])
         if sig in seen:
             continue
         seen.add(sig)
         keep.append(e)
-
-    # само отсега напред, две седмици стигат
-    today = datetime.date.today().isoformat()
-    limit = (datetime.date.today() + datetime.timedelta(days=14)).isoformat()
-    keep = [e for e in keep if today <= e['d'] <= limit][:120]
+    keep = keep[:150]
 
     print('общо събития:', len(keep))
-    for e in keep[:6]:
-        print('  ', e['d'], e['t'], '→', e['end'], e['venue'], '·', e['name'][:40])
+    for e in keep[:8]:
+        print('  ', e['d'], e['t'], '→', e['end'], '·', e['venue'], '·', e['name'][:38])
 
     if not keep:
         print('НИЩО НЕ СЕ ИЗТЕГЛИ — не презаписвам стария файл')
