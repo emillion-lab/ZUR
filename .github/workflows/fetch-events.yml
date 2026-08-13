@@ -1,6 +1,8 @@
 name: Fetch Events
-# Събития от Eventfrog — най-големият швейцарски календар.
-# Изисква repo secret EVENTFROG_KEY (безплатен ключ от eventfrog.ch).
+# Събития от Eventfrog Public API v1.
+# Изисква repo secret EVENTFROG_KEY (Settings → Secrets and variables →
+# Actions → Repository secrets). Внимание: секретите за Dependabot и за
+# Environments са отделни списъци и НЕ се виждат тук.
 on:
   schedule:
     - cron: '40 4 * * *'
@@ -26,6 +28,23 @@ jobs:
 
       - name: Prepare data dir
         run: mkdir -p data
+
+      # Проверка дали секретът изобщо стига дотук. Стойността не се
+      # показва — само дължината, което стига да се разбере дали е
+      # зададен и дали не е залепнало нещо празно.
+      - name: Check secret
+        env:
+          EVENTFROG_KEY: ${{ secrets.EVENTFROG_KEY }}
+        run: |
+          if [ -z "$EVENTFROG_KEY" ]; then
+            echo "EVENTFROG_KEY е ПРАЗЕН за този workflow."
+            echo "Провери:"
+            echo "  1. Името е точно EVENTFROG_KEY (главни букви, долна черта)"
+            echo "  2. Сложен е в 'Repository secrets', не в Dependabot и не в Environment"
+            echo "  3. Repo-то е emillion-lab/ZUR, а не друго"
+          else
+            echo "EVENTFROG_KEY е наличен, дължина: ${#EVENTFROG_KEY} знака"
+          fi
 
       - name: Fetch events
         continue-on-error: true
