@@ -19,8 +19,10 @@
   var KINDS = {
     flights: { icon:'✈️', title:'Flight arrivals', gsw:'Aachoendi Flüüg' },
     train:   { icon:'🚂', title:'Train arrivals',  gsw:'Aachoendi Züg'  },
-    // NO-CITY-BUS — градските отпадат: слезлият в центъра не търси такси
-    intl:    { icon:'🌍', title:'Intl. coaches',   gsw:'Uslandbüs'      }
+    // REGIONAL-BUS — градските отпадат (слезлият в центъра не търси такси),
+    // но междуградските остават: те докарват хора с багаж от околните градчета
+    bus:     { icon:'🚌', title:'Regional coaches', gsw:'Regionalbüs'  },
+    intl:    { icon:'🌍', title:'Intl. coaches',    gsw:'Uslandbüs'    }
   };
 
   // Спирките, от които идват хора с багаж или бързане
@@ -31,10 +33,13 @@
       ['Zürich Stadelhofen',  'Stadelhofen'],
       ['Zürich Flughafen',    'Flughafen']
     ],
+    // Регионалните спират на гаровите площади, не по градските спирки
     bus: [
+      ['Zürich HB',              'HB'],
       ['Zürich, Bahnhofquai/HB', 'Bahnhofquai'],
-      ['Zürich, Central',        'Central'],
-      ['Zürich, Bellevue',       'Bellevue']
+      ['Zürich Oerlikon',        'Oerlikon'],
+      ['Zürich, Bellevue',       'Bellevue'],
+      ['Zürich Flughafen',       'Flughafen']
     ],
     // INTL-WIDE — имената на терминала се разминават между базите,
     // затова се пробват няколко и се събира каквото върне
@@ -194,7 +199,14 @@
           if(!when) return null;
           var cat = (e.category || '').toUpperCase();
           if(kind === 'train' && !TRAIN_CAT[cat]) return null;
-          if(kind === 'bus' && !BUS_CAT[cat]) return null;
+          if(kind === 'bus'){
+            if(!BUS_CAT[cat]) return null;
+            // REGIONAL-BUS — градските линии в Цюрих са едно- или
+            // двуцифрени (31, 46, 72); регионалните са трицифрени или
+            // носят име на превозвач. Само вторите докарват клиенти.
+            var num = String(e.number || '').trim();
+            if(/^\d{1,2}$/.test(num)) return null;
+          }
           // INTL-NOTRAM — Sihlquai е и трамвайна спирка. Предишната
           // версия пускаше всичко и таблото се напълни с T50/T51/T17,
           // тоест градски трамваи, обявени за международни автобуси.

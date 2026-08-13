@@ -1641,6 +1641,32 @@ body.tp-open #tp-panel{
   #list-btn    { bottom:300px !important; }
 }
 
+/* ZUR-RAIL-V4 */
+/* ── Пет бутона за пристигащи, отдолу нагоре ──
+   ⛶ 16 · 📍 72 · ⏱ 128 · ✈️ 184 · 🚂 240 · 🚌 296 · 🌍 352 · 📋 408 */
+#tp-tram{ display:none !important; }
+#tp-bus { display:flex !important; }
+
+#fs-btn      { bottom:16px  !important; top:auto !important; }
+#gps-btn     { bottom:72px  !important; top:auto !important; }
+#next90-btn  { bottom:128px !important; top:auto !important; }
+#flights-btn { bottom:184px !important; top:auto !important; }
+#tp-train    { bottom:240px !important; top:auto !important; }
+#tp-bus      { bottom:296px !important; top:auto !important; }
+#tp-intl     { bottom:352px !important; top:auto !important; }
+#list-btn    { bottom:408px !important; top:auto !important; }
+
+@media (max-height:760px), (max-width:400px){
+  #fs-btn      { bottom:12px  !important; }
+  #gps-btn     { bottom:60px  !important; }
+  #next90-btn  { bottom:108px !important; }
+  #flights-btn { bottom:156px !important; }
+  #tp-train    { bottom:204px !important; }
+  #tp-bus      { bottom:252px !important; }
+  #tp-intl     { bottom:300px !important; }
+  #list-btn    { bottom:348px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1792,7 +1818,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<script src="app.js?v=202608130903"></script>
+<script src="app.js?v=202608130939"></script>
 <script src="transport.js"></script>
 
 <!-- PWA Install Banner -->
