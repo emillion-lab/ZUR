@@ -106,6 +106,9 @@
       'text-overflow:ellipsis;white-space:nowrap}',
       '.tp-st{font-size:11px;color:var(--muted);display:block;margin-top:2px}',
       '.tp-plat{font-size:13px;color:var(--muted);min-width:32px;text-align:right}',
+      '.tp-row.go{cursor:pointer}',
+      '.tp-row.go:active{background:rgba(3,105,161,.10)}',
+      '.tp-go{color:var(--cyan);font-size:20px;min-width:18px;text-align:right;opacity:.7}',
       '.tp-late{color:var(--red);font-size:12px;font-weight:700;margin-left:3px}',
       '.tp-empty{padding:40px 20px;text-align:center;color:var(--muted);',
       'font-size:15px;line-height:1.7}',
@@ -148,6 +151,10 @@
                 + '<div class="tp-body" id="tp-body"></div>';
     document.body.appendChild(p);
     document.getElementById('tp-close').addEventListener('click', close);
+    document.getElementById('tp-body').addEventListener('click', function(e){
+      var row = e.target.closest ? e.target.closest('.tp-row.go') : null;
+      if(row) goTo(row.getAttribute('data-go'));
+    });
   }
 
   function close(){
@@ -338,6 +345,43 @@
       .catch(function(){ busy = false; render(); });
   }
 
+
+  // GOTO-ZONE — къде на картата стои всяка спирка. Летището и гарите
+  // съвпадат със зоните на приложението; трамвайните възли са добавени,
+  // защото хората слизат там, а зона няма.
+  var PLACES = {
+    'HB':            [47.3779,  8.5403],
+    'Sihlquai':      [47.3800,  8.5350],
+    'Sihlquai/HB':   [47.3800,  8.5350],
+    'Oerlikon':      [47.4116,  8.5442],
+    'Stadelhofen':   [47.3663,  8.5484],
+    'Flughafen':     [47.4515,  8.5622],
+    'Bahnhofquai':   [47.3771,  8.5419],
+    'Central':       [47.3769,  8.5431],
+    'Bellevue':      [47.3668,  8.5453],
+    'Busbahnhof':    [47.3800,  8.5350]
+  };
+
+  // Летищните редове нямат спирка — всички водят до терминала
+  var AIRPORT = [47.4515, 8.5622];
+
+  function goTo(place){
+    var p = place ? PLACES[place] : null;
+    if(!p && open === 'flights') p = AIRPORT;
+    if(!p) return;
+    close();                      // панелът се маха, за да се вижда картата
+    setTimeout(function(){
+      try{
+        if(document.body.classList.contains('list-view')
+           && window.toggleMapView) window.toggleMapView();
+        if(window.map){
+          window.map.invalidateSize();
+          window.map.flyTo(p, 15, {duration: 0.9});
+        }
+      }catch(e){}
+    }, 60);
+  }
+
   function render(){
     if(!open) return;
     var body = document.getElementById('tp-body');
@@ -388,12 +432,13 @@
 
       var late = r.delay > 0 ? '<span class="tp-late">+' + r.delay + '</span>' : '';
       var inTxt = mins !== null && mins > 0 ? ' · ' + mins + ' min' : '';
-      html += '<div class="tp-row' + (isNow ? ' now' : '') + '">'
+      html += '<div class="tp-row go' + (isNow ? ' now' : '') + '"'
+            + ' data-go="' + esc(r.st) + '">'
             + '<span class="tp-t">' + r.t + late + '</span>'
             + '<span class="tp-line">' + esc(r.cat) + esc(r.line) + '</span>'
             + '<span class="tp-to">' + esc(r.from)
             + '<span class="tp-st">' + esc(r.st) + inTxt + '</span></span>'
-            + '<span class="tp-plat">' + esc(r.plat) + '</span>'
+            + '<span class="tp-go">›</span>'
             + '</div>';
     });
 
@@ -441,12 +486,13 @@
   }
 
   function flightRow(r, cls){
-    return '<div class="tp-row ' + cls + '">'
+    return '<div class="tp-row go ' + cls + '" data-go="Flughafen">'
          + '<span class="tp-t">' + r.t + '</span>'
          + '<span class="tp-line">' + esc(r.line) + '</span>'
          + '<span class="tp-to">' + esc(r.from)
          + '<span class="tp-st">' + r.t + '–' + r.t2 + '</span></span>'
          + '<span class="tp-plat">' + r.plat + '</span>'
+         + '<span class="tp-go">›</span>'
          + '</div>';
   }
 
