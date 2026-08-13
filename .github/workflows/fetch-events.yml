@@ -1,0 +1,48 @@
+name: Fetch Events
+# Афишът на Цюрих. Краят на събитието е моментът, в който хиляда души
+# излизат наведнъж — това е, което интересува таксито.
+on:
+  schedule:
+    - cron: '40 4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.run'
+      - 'scripts/fetch_events.py'
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Prepare data dir
+        run: mkdir -p data
+
+      - name: Fetch events
+        continue-on-error: true
+        run: python3 scripts/fetch_events.py 2>&1 | tee data/events-log.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "── лог ──"
+          cat data/events-log.txt || echo "няма лог"
+
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name ci; git config user.email ci@zur
+          git add -f data/events.json data/events-log.txt 2>/dev/null || true
+          git add -A data 2>/dev/null || true
+          git commit -m "events refreshed [skip ci]" || echo "без промени"
+          git fetch origin main && git rebase origin/main || true
+          git push
