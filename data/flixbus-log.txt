@@ -1,29 +1,37 @@
 търся идентификатора на Цюрих…
   Цюрих = 40d8fa3c-8646-11e6-9066-549f350fcb0c
-Milan        40ddcc6e-8646-11e6-9066-549f350fcb0c → 13 курса
-Munich       40d901a5-8646-11e6-9066-549f350fcb0c → 11 курса
-Stuttgart    40d90995-8646-11e6-9066-549f350fcb0c → 4 курса
-Frankfurt    40d90407-8646-11e6-9066-549f350fcb0c → 7 курса
-Paris        40de8964-8646-11e6-9066-549f350fcb0c → 4 курса
-Lyon         40df89c1-8646-11e6-9066-549f350fcb0c → 5 курса
-Vienna       40de1f31-8646-11e6-9066-549f350fcb0c → 12 курса
-Prague       40de1ad1-8646-11e6-9066-549f350fcb0c → 18 курса
-Berlin       40d8f682-8646-11e6-9066-549f350fcb0c → 27 курса
-Belgrade     340bdce6-7eb1-4c50-bd1e-fd43485cdfef → 5 курса
-Zagreb       40dea87d-8646-11e6-9066-549f350fcb0c → 8 курса
-Ljubljana    40de8044-8646-11e6-9066-549f350fcb0c → 6 курса
-Budapest     40de6527-8646-11e6-9066-549f350fcb0c → 15 курса
-Amsterdam    40dde3b8-8646-11e6-9066-549f350fcb0c → 12 курса
-Brussels     40de6287-8646-11e6-9066-549f350fcb0c → 1 курса
-Barcelona    40e086ed-8646-11e6-9066-549f350fcb0c → 12 курса
-Venice       40dea03b-8646-11e6-9066-549f350fcb0c → 14 курса
-Florence     40de71c6-8646-11e6-9066-549f350fcb0c → 9 курса
-Turin        40deee02-8646-11e6-9066-549f350fcb0c → 11 курса
-Sarajevo     b4b1c3c9-608f-4920-9dfc-85762cef4b04 → 5 курса
-Skopje       7c0e2d09-d177-4c0b-a274-051c9c9a6347 → 6 курса
-Sofia        40e09335-8646-11e6-9066-549f350fcb0c → 3 курса
-общо пристигащи: 60
-   13:10 Stuttgart → Sihlquai FlixBus
-   14:50 Munich → Sihlquai FlixBus
-   15:15 Munich → Sihlquai FlixBus
-записан data/flixbus.json: 7778 байта
+  --- суров запис ---
+  ключове: ['arrival', 'available', 'departure', 'duration', 'intermediate_stations_count', 'legs', 'messages', 'price', 'provider', 'remaining', 'restrictions', 'status', 'transfer_type', 'transfer_type_key', 'uid']
+  arrival: {"date": "2026-08-13T16:00:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
+  leg[-1] ключове: ['amenities', 'arrival', 'brand_id', 'cheapest_seat', 'departure', 'is_marketplace', 'layout_configuration', 'means_of_transport', 'operator_id', 'ride_id', 'seat_types', 'sub_brand_id', 'vehicle_details']
+  leg[-1].arrival: {"date": "2026-08-13T16:00:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
+  -------------------
+Milan        → 13 курса
+Munich       → 10 курса
+Stuttgart    → 3 курса
+Frankfurt    → 7 курса
+Paris        → 4 курса
+Lyon         → 5 курса
+Vienna       → 12 курса
+Prague       → 18 курса
+Berlin       → 21 курса
+Belgrade     → 5 курса
+Zagreb       → 8 курса
+Ljubljana    → 6 курса
+Budapest     → 13 курса
+Amsterdam    → 12 курса
+Brussels     → 1 курса
+Barcelona    → 12 курса
+Venice       → 14 курса
+Florence     → 8 курса
+Turin        → 11 курса
+Sarajevo     → 4 курса
+Skopje       → 6 курса
+Sofia        → 2 курса
+общо пристигащи: 70
+   Sihlquai               70
+   14:50 Munich → Sihlquai
+   15:55 Milan → Sihlquai
+   16:00 Milan → Sihlquai
+   17:20 Frankfurt → Sihlquai
+записан data/flixbus.json: 9081 байта
