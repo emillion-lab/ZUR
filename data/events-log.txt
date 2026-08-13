@@ -1,21 +1,3 @@
-тегля www.hallenstadion.ch
-   → 1 JSON-LD блока, 0 събития
-тегля www.hallenstadion.ch
-    неуспех: HTTPError HTTP Error 404: Not Found
-   → празно
-тегля www.opernhaus.ch
-   → 0 JSON-LD блока, 0 събития
-тегля www.schauspielhaus.ch
-    неуспех: HTTPError HTTP Error 404: Not Found
-   → празно
-тегля www.kaufleuten.ch
-   → 1 JSON-LD блока, 0 събития
-тегля www.x-tra.ch
-   → 0 JSON-LD блока, 0 събития
-тегля www.tonhalle-orchester.ch
-   → 0 JSON-LD блока, 0 събития
-тегля www.zuerich.com
-    неуспех: HTTPError HTTP Error 404: Not Found
-   → празно
-общо събития: 0
-НИЩО НЕ СЕ ИЗТЕГЛИ — не презаписвам стария файл
+НЯМА КЛЮЧ. Вземи безплатен от eventfrog.ch и го сложи като
+repo secret EVENTFROG_KEY (Settings → Secrets → Actions).
+Документация: https://docs.api.eventfrog.net/
