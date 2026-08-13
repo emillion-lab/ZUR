@@ -134,8 +134,10 @@ def fetch_locations(ids):
     """Пита точно за залите, които събитията ползват — без налучкване."""
     locs = {}
     ids = [i for i in ids if i]
-    for i in range(0, len(ids), 200):          # на порции, за да не е дълъг адресът
-        chunk = ids[i:i + 200]
+    # CHUNK-40 — по 200 идентификатора адресът минаваше 4000 знака и
+    # сървърът връщаше 414. Четиридесет дават около 900 знака.
+    for i in range(0, len(ids), 40):
+        chunk = ids[i:i + 40]
         d = call('/locations', {'id': chunk, 'perPage': PER_PAGE})
         if not d:
             continue
@@ -147,7 +149,7 @@ def fetch_locations(ids):
                 'city': l.get('city') or '',
             }
         print('   зали %d–%d → %d' % (i, i + len(chunk), len(got)))
-        time.sleep(0.5)
+        time.sleep(0.35)
     return locs
 
 
