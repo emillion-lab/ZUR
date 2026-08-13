@@ -17,6 +17,8 @@
   var API = 'https://transport.opendata.ch/v1/stationboard';
 
   var KINDS = {
+    // EVENTS-PANEL — кога тълпа излиза на улицата
+    events:  { icon:'⏱', title:'Ending soon',     gsw:'Hört gly uf'    },
     flights: { icon:'✈️', title:'Flight arrivals', gsw:'Aachoendi Flüüg' },
     train:   { icon:'🚂', title:'Train arrivals',  gsw:'Aachoendi Züg'  },
     // REGIONAL-BUS — градските отпадат (слезлият в центъра не търси такси),
@@ -130,7 +132,9 @@
 
   function mkButtons(){
     Object.keys(KINDS).forEach(function(k){
-      var id = k === 'flights' ? 'flights-btn' : 'tp-' + k;
+      var id = k === 'flights' ? 'flights-btn'
+             : k === 'events'  ? 'next90-btn'
+             : 'tp-' + k;
       var b = document.getElementById(id);
       if(b && b.dataset.tpBound) return;
       if(!b){
@@ -183,7 +187,9 @@
   function toggle(kind){
     if(open === kind){ close(); return; }
     open = kind;
-    var id = kind === 'flights' ? 'flights-btn' : 'tp-' + kind;
+    var id = kind === 'flights' ? 'flights-btn'
+           : kind === 'events'  ? 'next90-btn'
+           : 'tp-' + kind;
     document.querySelectorAll('.tp-btn').forEach(function(b){
       b.classList.toggle('on', b.id === id);
     });
@@ -412,8 +418,10 @@
     }, 60);
   }
 
-  function goTo(place){
-    var p = place ? PLACES[place] : null;
+  function goTo(place, lat, lng){
+    var p = null;
+    if(lat && lng) p = [lat, lng];            // събитията носят свои точки
+    if(!p) p = place ? PLACES[place] : null;
     if(!p && open === 'flights') p = AIRPORT;
     if(!p) return;
     close();                      // панелът се маха, за да се вижда картата
@@ -468,6 +476,44 @@
       .catch(function(){ busy = false; render(); });
   }
 
+
+  // EVENTS-PANEL — събитията идват от data/events.json (Eventfrog).
+  // Подреждаме по КРАЯ: таксито го интересува кога излизат хората.
+  function loadEvents(){
+    var c = cache.events;
+    if(c && Date.now() - c.at < 600000){ render(); return; }
+    busy = true; render();
+    fetch('data/events.json', {cache:'no-cache'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){
+        busy = false;
+        var rows = [];
+        (j && j.events ? j.events : []).forEach(function(e){
+          if(!e.end) return;
+          var endTs = new Date(e.d + 'T' + e.end + ':00').getTime();
+          // събитие, което свършва след полунощ, се води за следващия ден
+          var startTs = new Date(e.d + 'T' + e.t + ':00').getTime();
+          if(endTs < startTs) endTs += 86400000;
+          rows.push({
+            t: e.end,                       // показваме края, не началото
+            ts: endTs,
+            cat: '',
+            line: e.size >= 1000 ? '👥' + Math.round(e.size / 1000) + 'k'
+                 : e.size >= 500 ? '👥' + e.size : '',
+            from: e.name,
+            plat: '',
+            delay: 0,
+            st: e.venue,
+            lat: e.lat, lng: e.lng
+          });
+        });
+        rows.sort(function(a, b){ return a.ts - b.ts; });
+        cache.events = { rows: rows, at: Date.now(), live: false };
+        render();
+      })
+      .catch(function(){ busy = false; render(); });
+  }
+
   function render(){
     if(!open) return;
     var body = document.getElementById('tp-body');
@@ -502,7 +548,9 @@
 
     c.rows.forEach(function(r){
       var mins = r.ts ? Math.round((r.ts - now) / 60000) : null;
-      var isNow  = mins !== null && mins >= -5 && mins <= 5;
+      var isNow  = (open === 'events')
+                 ? (mins !== null && mins >= -10 && mins <= 30)
+                 : (mins !== null && mins >= -5 && mins <= 5);
       var isPast = mins !== null && mins < -5;
       // Международните са по няколко на ден — минал автобус пак е
       // сведение кога идва следващият, затова не се крие.
