@@ -1,29 +1,29 @@
 търся идентификатора на Цюрих…
   Цюрих = 40d8fa3c-8646-11e6-9066-549f350fcb0c
 Milan        40ddcc6e-8646-11e6-9066-549f350fcb0c → 13 курса
-Munich       40d901a5-8646-11e6-9066-549f350fcb0c → 13 курса
+Munich       40d901a5-8646-11e6-9066-549f350fcb0c → 11 курса
 Stuttgart    40d90995-8646-11e6-9066-549f350fcb0c → 4 курса
 Frankfurt    40d90407-8646-11e6-9066-549f350fcb0c → 7 курса
 Paris        40de8964-8646-11e6-9066-549f350fcb0c → 4 курса
-Lyon         40df89c1-8646-11e6-9066-549f350fcb0c → 6 курса
-Vienna       40de1f31-8646-11e6-9066-549f350fcb0c → 13 курса
+Lyon         40df89c1-8646-11e6-9066-549f350fcb0c → 5 курса
+Vienna       40de1f31-8646-11e6-9066-549f350fcb0c → 12 курса
 Prague       40de1ad1-8646-11e6-9066-549f350fcb0c → 18 курса
-Berlin       40d8f682-8646-11e6-9066-549f350fcb0c → 29 курса
+Berlin       40d8f682-8646-11e6-9066-549f350fcb0c → 27 курса
 Belgrade     340bdce6-7eb1-4c50-bd1e-fd43485cdfef → 5 курса
-Zagreb       40dea87d-8646-11e6-9066-549f350fcb0c → 9 курса
+Zagreb       40dea87d-8646-11e6-9066-549f350fcb0c → 8 курса
 Ljubljana    40de8044-8646-11e6-9066-549f350fcb0c → 8 курса
 Budapest     40de6527-8646-11e6-9066-549f350fcb0c → 15 курса
-Amsterdam    40dde3b8-8646-11e6-9066-549f350fcb0c → 13 курса
+Amsterdam    40dde3b8-8646-11e6-9066-549f350fcb0c → 12 курса
 Brussels     40de6287-8646-11e6-9066-549f350fcb0c → 1 курса
-Barcelona    40e086ed-8646-11e6-9066-549f350fcb0c → 13 курса
-Venice       40dea03b-8646-11e6-9066-549f350fcb0c → 16 курса
-Florence     40de71c6-8646-11e6-9066-549f350fcb0c → 11 курса
+Barcelona    40e086ed-8646-11e6-9066-549f350fcb0c → 12 курса
+Venice       40dea03b-8646-11e6-9066-549f350fcb0c → 15 курса
+Florence     40de71c6-8646-11e6-9066-549f350fcb0c → 9 курса
 Turin        40deee02-8646-11e6-9066-549f350fcb0c → 11 курса
 Sarajevo     b4b1c3c9-608f-4920-9dfc-85762cef4b04 → 5 курса
 Skopje       7c0e2d09-d177-4c0b-a274-051c9c9a6347 → 6 курса
 Sofia        40e09335-8646-11e6-9066-549f350fcb0c → 3 курса
 общо пристигащи: 60
    13:10 Stuttgart → Sihlquai FlixBus
-   13:20 Munich → Sihlquai FlixBus
-   14:10 Munich → Sihlquai FlixBus
-записан data/flixbus.json: 7778 байта
+   14:50 Munich → Sihlquai FlixBus
+   15:15 Munich → Sihlquai FlixBus
+записан data/flixbus.json: 7783 байта
