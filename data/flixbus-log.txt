@@ -11,7 +11,7 @@ Prague       40de1ad1-8646-11e6-9066-549f350fcb0c → 18 курса
 Berlin       40d8f682-8646-11e6-9066-549f350fcb0c → 27 курса
 Belgrade     340bdce6-7eb1-4c50-bd1e-fd43485cdfef → 5 курса
 Zagreb       40dea87d-8646-11e6-9066-549f350fcb0c → 8 курса
-Ljubljana    40de8044-8646-11e6-9066-549f350fcb0c → 8 курса
+Ljubljana    40de8044-8646-11e6-9066-549f350fcb0c → 6 курса
 Budapest     40de6527-8646-11e6-9066-549f350fcb0c → 15 курса
 Amsterdam    40dde3b8-8646-11e6-9066-549f350fcb0c → 12 курса
 Brussels     40de6287-8646-11e6-9066-549f350fcb0c → 1 курса
@@ -26,4 +26,4 @@ Sofia        40e09335-8646-11e6-9066-549f350fcb0c → 3 курса
    13:10 Stuttgart → Sihlquai FlixBus
    14:50 Munich → Sihlquai FlixBus
    15:15 Munich → Sihlquai FlixBus
-записан data/flixbus.json: 7785 байта
+записан data/flixbus.json: 7778 байта
