@@ -20,19 +20,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Всеки патч се пуска отделно и провалът му НЕ спира останалите.
+      # По-рано един счупен скрипт събаряше цялата стъпка и следващите
+      # патчове тихо не се прилагаха — точно това скри махането на
+      # градските автобуси за цял ден.
       - name: Apply pending patches
         run: |
+          fails=0
           for p in patch_*.py; do
             [ -f "$p" ] || continue
             echo "── $p ──"
-            python3 "$p"
+            if python3 "$p"; then
+              :
+            else
+              echo "   ^^ ПРОВАЛЕН (продължавам с останалите)"
+              fails=$((fails+1))
+            fi
           done
+          echo ""
+          echo "провалени патчове: $fails"
 
       - name: Syntax check
         run: |
           node --check app.js && echo "app.js OK"
           node --check theme.js && echo "theme.js OK"
           node --check weather-sky.js && echo "weather-sky.js OK"
+          node --check transport.js && echo "transport.js OK"
           node --check sw.js && echo "sw.js OK"
           python3 -c "import json; json.load(open('manifest.json')); print('manifest.json OK')"
 
@@ -42,7 +55,6 @@ jobs:
           if git diff --quiet; then
             echo "без промени"
           else
-            # версията в script тага се вдига, за да не сервира браузърът стар app.js
             V=$(date -u +%Y%m%d%H%M)
             sed -i "s/app\.js?v=[0-9a-z]*/app.js?v=$V/" index.html
             git add -A
