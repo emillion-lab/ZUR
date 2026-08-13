@@ -498,7 +498,7 @@
 
     var now = Date.now();
     var html = '';
-    var wroteNow = false, wroteLater = false;
+    var wroteNow = false, wroteLater = false, shown = 0;
 
     c.rows.forEach(function(r){
       var mins = r.ts ? Math.round((r.ts - now) / 60000) : null;
@@ -507,6 +507,10 @@
       // Международните са по няколко на ден — минал автобус пак е
       // сведение кога идва следващият, затова не се крие.
       if(isPast && open !== 'intl') return;
+      // SEVEN-EVENTS — за събитията седем реда стигат: това е смяна,
+      // не програма за седмицата. Останалите само разсейват.
+      if(open === 'events' && shown >= 7) return;
+      shown++;
 
       if(isNow && !wroteNow){
         html += '<div class="tp-sec">' + (isGsw() ? 'Jetzt' : 'Arriving now') + '</div>';
