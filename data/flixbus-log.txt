@@ -1,5 +1,9 @@
 търся идентификатора на Цюрих…
   Цюрих = 40d8fa3c-8646-11e6-9066-549f350fcb0c
+тегля спирките на Цюрих…
+  stations → 2 записа
+  cities → 3 записа
+  известни спирки: 5
   --- суров запис ---
   ключове: ['arrival', 'available', 'departure', 'duration', 'intermediate_stations_count', 'legs', 'messages', 'price', 'provider', 'remaining', 'restrictions', 'status', 'transfer_type', 'transfer_type_key', 'uid']
   arrival: {"date": "2026-08-13T16:00:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
@@ -14,12 +18,12 @@ Paris        → 4 курса
 Lyon         → 5 курса
 Vienna       → 12 курса
 Prague       → 18 курса
-Berlin       → 21 курса
+Berlin       → 20 курса
 Belgrade     → 5 курса
-Zagreb       → 8 курса
+Zagreb       → 7 курса
 Ljubljana    → 6 курса
-Budapest     → 13 курса
-Amsterdam    → 12 курса
+Budapest     → 12 курса
+Amsterdam    → 11 курса
 Brussels     → 1 курса
 Barcelona    → 12 курса
 Venice       → 14 курса
@@ -29,9 +33,11 @@ Sarajevo     → 4 курса
 Skopje       → 6 курса
 Sofia        → 2 курса
 общо пристигащи: 70
-   Sihlquai               70
-   14:50 Munich → Sihlquai
-   15:55 Milan → Sihlquai
-   16:00 Milan → Sihlquai
-   17:20 Frankfurt → Sihlquai
-записан data/flixbus.json: 9081 байта
+   Zurich                 70
+различни station_id в отговорите:
+   dcbab299  Zurich                       191
+   14:50 Munich → Zurich
+   15:55 Milan → Zurich
+   16:00 Milan → Zurich
+   17:20 Frankfurt → Zurich
+записан data/flixbus.json: 8938 байта
