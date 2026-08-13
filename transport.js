@@ -22,7 +22,9 @@
     // REGIONAL-BUS — градските отпадат (слезлият в центъра не търси такси),
     // но междуградските остават: те докарват хора с багаж от околните градчета
     bus:     { icon:'🚌', title:'Regional coaches', gsw:'Regionalbüs'  },
-    intl:    { icon:'🌍', title:'Intl. coaches',    gsw:'Uslandbüs'    }
+    intl:    { icon:'🌍', title:'Intl. coaches',    gsw:'Uslandbüs'    },
+    // EVENTS-KIND — подредени по края: тогава излиза тълпата
+    events:  { icon:'🎫', title:'Events ending',    gsw:'Events am Ände' }
   };
 
   // Спирките, от които идват хора с багаж или бързане
@@ -162,7 +164,10 @@
     document.getElementById('tp-close').addEventListener('click', close);
     document.getElementById('tp-body').addEventListener('click', function(e){
       var row = e.target.closest ? e.target.closest('.tp-row.go') : null;
-      if(row) goTo(row.getAttribute('data-go'));
+      if(!row) return;
+      var la = row.getAttribute('data-lat'), ln = row.getAttribute('data-lng');
+      if(la && ln) goToPoint([parseFloat(la), parseFloat(ln)]);
+      else goTo(row.getAttribute('data-go'));
     });
   }
 
@@ -185,7 +190,8 @@
     document.getElementById('tp-panel').classList.add('on');
     document.body.classList.add('tp-open');
     render();
-    if(kind === 'intl') loadFlix();
+    if(kind === 'events') loadEvents();
+    else if(kind === 'intl') loadFlix();
     else if(kind !== 'flights') load(kind);
   }
 
@@ -391,6 +397,21 @@
   // Летищните редове нямат спирка — всички водят до терминала
   var AIRPORT = [47.450375, 8.562402];
 
+  function goToPoint(p){
+    if(!p || isNaN(p[0])) return;
+    close();
+    setTimeout(function(){
+      try{
+        if(document.body.classList.contains('list-view')
+           && window.toggleMapView) window.toggleMapView();
+        if(window.map){
+          window.map.invalidateSize();
+          window.map.flyTo(p, 15, {duration: 0.9});
+        }
+      }catch(e){}
+    }, 60);
+  }
+
   function goTo(place){
     var p = place ? PLACES[place] : null;
     if(!p && open === 'flights') p = AIRPORT;
@@ -406,6 +427,45 @@
         }
       }catch(e){}
     }, 60);
+  }
+
+
+  // EVENTS-KIND — от data/events.json, пълнен всяка нощ от Eventfrog.
+  // Подреждаме по края: началото не носи клиенти, краят носи.
+  function loadEvents(){
+    var c = cache.events;
+    if(c && Date.now() - c.at < 600000){ render(); return; }
+    busy = true; render();
+    fetch('data/events.json', {cache:'no-cache'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){
+        busy = false;
+        var rows = [];
+        (j && j.events || []).forEach(function(e){
+          if(!e.end) return;                       // без край не върши работа
+          var endTs = Date.parse(e.d + 'T' + e.end + ':00');
+          var begTs = Date.parse(e.d + 'T' + e.t + ':00');
+          // събитие след полунощ свършва на следващия ден
+          if(endTs < begTs) endTs += 86400000;
+          rows.push({
+            t: e.end,                              // часът, който ни интересува
+            ts: endTs,
+            cat: '',
+            line: e.size >= 1000 ? '★' : '',       // големите се открояват
+            from: e.name,
+            plat: '',
+            delay: 0,
+            st: e.venue || 'Zürich',
+            lat: e.lat, lng: e.lng,
+            began: e.t,
+            size: e.size || 0
+          });
+        });
+        rows.sort(function(a, b){ return a.ts - b.ts; });
+        cache.events = { rows: rows, at: Date.now(), live: false };
+        render();
+      })
+      .catch(function(){ busy = false; render(); });
   }
 
   function render(){
@@ -458,19 +518,26 @@
 
       var late = r.delay > 0 ? '<span class="tp-late">+' + r.delay + '</span>' : '';
       var inTxt = mins !== null && mins > 0 ? ' · ' + mins + ' min' : '';
+      var sub = open === 'events'
+        ? esc(r.st) + ' · ' + (isGsw() ? 'aa ' : 'from ') + r.began + inTxt
+        : esc(r.st) + inTxt;
       html += '<div class="tp-row go' + (isNow ? ' now' : '') + '"'
-            + ' data-go="' + esc(r.st) + '">'
+            + ' data-go="' + esc(r.st) + '"'
+            + (r.lat ? ' data-lat="' + r.lat + '" data-lng="' + r.lng + '"' : '')
+            + '>'
             + '<span class="tp-t">' + r.t + late + '</span>'
             + '<span class="tp-line">' + esc(r.cat) + esc(r.line) + '</span>'
             + '<span class="tp-to">' + esc(r.from)
-            + '<span class="tp-st">' + esc(r.st) + inTxt + '</span></span>'
+            + '<span class="tp-st">' + sub + '</span></span>'
             + '<span class="tp-go">›</span>'
             + '</div>';
     });
 
     if(!html) html = '<div class="tp-empty">' + emptyText() + '</div>';
 
-    body.innerHTML = html + '<div class="tp-note">transport.opendata.ch</div>';
+    body.innerHTML = html + '<div class="tp-note">'
+      + (open === 'events' ? 'eventfrog.ch' : 'transport.opendata.ch')
+      + '</div>';
   }
 
   function renderFlights(body){
