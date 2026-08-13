@@ -19,7 +19,7 @@
   var KINDS = {
     flights: { icon:'✈️', title:'Flight arrivals', gsw:'Aachoendi Flüüg' },
     train:   { icon:'🚂', title:'Train arrivals',  gsw:'Aachoendi Züg'  },
-    bus:     { icon:'🚌', title:'Bus arrivals',    gsw:'Aachoendi Büs'  },
+    // NO-CITY-BUS — градските отпадат: слезлият в центъра не търси такси
     intl:    { icon:'🌍', title:'Intl. coaches',   gsw:'Uslandbüs'      }
   };
 

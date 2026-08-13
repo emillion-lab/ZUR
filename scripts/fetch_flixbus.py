@@ -70,6 +70,40 @@ def get(url, tries=3):
     return None
 
 
+
+# STATION-MAP — `arrival` дава само station_id; имената идват оттук.
+STATIONS = {}
+
+
+def load_stations(city_name):
+    """Тегли спирките на града и връща съответствие id → име."""
+    for path in ('/search/autocomplete/stations',
+                 '/search/autocomplete/cities'):
+        url = (BASE + path + '?q=' + urllib.parse.quote(city_name)
+               + '&lang=en&country=')
+        d = get(url)
+        if not d:
+            continue
+        rows = d if isinstance(d, list) else (
+            d.get('stations') or d.get('cities') or d.get('results') or [])
+        got = 0
+        for r in rows:
+            sid = r.get('id') or r.get('uuid')
+            nm = r.get('name') or ''
+            if sid and nm:
+                STATIONS[str(sid)] = str(nm)
+                got += 1
+            # някои отговори носят спирките вложени в града
+            for s in (r.get('stations') or []):
+                sid2 = s.get('id') or s.get('uuid')
+                nm2 = s.get('name') or ''
+                if sid2 and nm2:
+                    STATIONS[str(sid2)] = str(nm2)
+                    got += 1
+        print('  %s → %d записа' % (path.rsplit('/', 1)[-1], got))
+    return STATIONS
+
+
 def find_city(name):
     url = (BASE + '/search/autocomplete/cities?q=' + urllib.parse.quote(name)
            + '&lang=en&country=')
@@ -115,11 +149,20 @@ def dump_shape(it):
         print('  (не мога да покажа записа:', type(ex).__name__, ')')
 
 
+SEEN_IDS = {}
+
+
 def station_of(it):
     """Търси името на спирката навсякъде, където може да е скрито."""
     cands = []
     arr = it.get('arrival') or {}
     if isinstance(arr, dict):
+        sid = str(arr.get('station_id') or '')
+        if sid:
+            SEEN_IDS[sid] = SEEN_IDS.get(sid, 0) + 1
+            nm = STATIONS.get(sid)
+            if nm:
+                cands.append(nm)
         for k in ('station_name', 'stationName', 'name', 'city_name', 'cityName'):
             v = arr.get(k)
             if v:
@@ -183,6 +226,9 @@ def main():
     print('търся идентификатора на Цюрих…')
     dest_id = find_city(DEST)
     print('  Цюрих =', dest_id)
+    print('тегля спирките на Цюрих…')
+    load_stations(DEST)
+    print('  известни спирки:', len(STATIONS))
     if not dest_id:
         print('НЕ МОГА ДА НАМЕРЯ ЦЮРИХ')
         sys.exit(1)
@@ -217,6 +263,9 @@ def main():
     print('общо пристигащи:', len(keep))
     for st, n in sorted(counts.items(), key=lambda x: -x[1]):
         print('   %-22s %d' % (st, n))
+    print('различни station_id в отговорите:')
+    for sid, n in sorted(SEEN_IDS.items(), key=lambda x: -x[1]):
+        print('   %s  %-28s %d' % (sid[:8], STATIONS.get(sid, '(непознат)'), n))
     for r in keep[:4]:
         print('  ', r['t'], r['from'], '→', r['station'])
 

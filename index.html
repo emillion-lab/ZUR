@@ -1618,6 +1618,29 @@ body.tp-open #tp-panel{
   body.tp-open #tp-panel{ background:var(--bg) !important; }
 }
 
+/* ZUR-RAIL-V3 */
+/* ── Колоната без градските автобуси: 4 бутона за пристигащи ──
+   ⛶ 16 · 📍 72 · ⏱ 128 · ✈️ 184 · 🚂 240 · 🌍 296 · 📋 352 */
+#tp-bus, #tp-tram{ display:none !important; }
+
+#fs-btn      { bottom:16px  !important; top:auto !important; }
+#gps-btn     { bottom:72px  !important; top:auto !important; }
+#next90-btn  { bottom:128px !important; top:auto !important; }
+#flights-btn { bottom:184px !important; top:auto !important; }
+#tp-train    { bottom:240px !important; top:auto !important; }
+#tp-intl     { bottom:296px !important; top:auto !important; }
+#list-btn    { bottom:352px !important; top:auto !important; }
+
+@media (max-height:760px), (max-width:400px){
+  #fs-btn      { bottom:12px  !important; }
+  #gps-btn     { bottom:60px  !important; }
+  #next90-btn  { bottom:108px !important; }
+  #flights-btn { bottom:156px !important; }
+  #tp-train    { bottom:204px !important; }
+  #tp-intl     { bottom:252px !important; }
+  #list-btn    { bottom:300px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1769,7 +1792,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<script src="app.js?v=202608130822"></script>
+<script src="app.js?v=202608130847"></script>
 <script src="transport.js"></script>
 
 <!-- PWA Install Banner -->
