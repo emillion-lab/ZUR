@@ -546,7 +546,9 @@
     var html = '';
     var wroteNow = false, wroteLater = false, shown = 0;
 
-    c.rows.forEach(function(r){
+    // EVENTS-LIMIT — седем реда се обхващат с един поглед
+    var list = (open === 'events') ? c.rows.slice(0, 7) : c.rows;
+    list.forEach(function(r){
       var mins = r.ts ? Math.round((r.ts - now) / 60000) : null;
       var isNow  = (open === 'events')
                  ? (mins !== null && mins >= -10 && mins <= 30)
