@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-"""Събития в Цюрих през Eventfrog.
+"""Събития в Цюрих през Eventfrog Public API v1.
 
-Два опита преди този се провалиха и от тях излезе поука: страниците на
-залите се строят от JavaScript, затова нито регулярни изрази по HTML,
-нито JSON-LD хващат нещо — сървърът връща празен скелет.
+Написано по официалната спецификация (publicapi-v1.json), а не по
+догадки. Двата предишни опита — регулярни изрази по HTML и после
+JSON-LD — върнаха нула, защото страниците на залите се строят от
+JavaScript и сървърът дава празен скелет.
 
-Eventfrog е най-големият швейцарски календар (над 20 000 събития) и има
-документиран отворен интерфейс за трети страни. Ключът се взима
-безплатно и се слага като repo secret EVENTFROG_KEY.
+Какво дава спецификацията и защо е важно:
+  · GET /public/v1/events с lat/lng/r — радиус в километри около Цюрих
+  · полето `end` е истинско, не се налага да се гадае продължителност
+  · `title` е обект с езици; вземаме de, после en, после каквото има
+  · `locationIds` сочи към отделния списък с места, откъдето идват
+    името и координатите на залата
+  · страниците започват от 1, не от 0
 
-За таксито значение има краят на събитието: хиляда души излизат наведнъж
-и половината търсят превоз. Затова се пази начало плюс очаквана
-продължителност според мястото.
+За таксито значение има краят: хиляда души излизат наведнъж и
+половината търсят превоз. Затова `end` се пази както е даден.
+
+Ключ: repo secret EVENTFROG_KEY. Спецификацията предпочита Bearer,
+затова се пробва първо той, а `apiKey` в адреса остава за резерва.
 
 Изход: data/events.json
 """
@@ -23,48 +30,52 @@ import datetime
 import urllib.parse
 import urllib.request
 
-API = 'https://api.eventfrog.net/api/v1/events.json'
+BASE = 'https://api.eventfrog.net/public/v1'
 KEY = os.environ.get('EVENTFROG_KEY', '').strip()
 
-# Цюрих и близките предградия, откъдето хората се прибират с такси
-BBOX = {'latMin': 47.30, 'latMax': 47.46, 'lngMin': 8.42, 'lngMax': 8.63}
+# Цюрих и предградията, откъдето се прибират с такси
+LAT, LNG, RADIUS = 47.3769, 8.5417, 15      # километри
+DAYS_AHEAD = 21
 
-# Големите зали: колко души излизат наведнъж и колко трае събитието.
-# Разпознават се по името на мястото, което Eventfrog връща.
-KNOWN = [
-    ('hallenstadion',  13000, 165),
-    ('letzigrund',     26000, 150),
-    ('opernhaus',       1100, 180),
-    ('schauspielhaus',   750, 150),
-    ('kaufleuten',      1500, 300),
-    ('x-tra',           1500, 300),
-    ('volkshaus',       1400, 180),
-    ('tonhalle',        1400, 150),
-    ('kongresshaus',    1900, 165),
-    ('theater 11',      1500, 165),
-    ('samsung hall',    1900, 180),
-    ('komplex 457',     1200, 300),
-    ('mascotte',         500, 300),
-    ('plaza',            600, 300),
-    ('moods',            300, 180),
+# Големите зали: колко души излизат наведнъж. Продължителността вече
+# идва от самото събитие, затова тук стои само размерът.
+SIZES = [
+    ('letzigrund',    26000),
+    ('hallenstadion', 13000),
+    ('kongresshaus',   1900),
+    ('samsung hall',   1900),
+    ('theater 11',     1500),
+    ('kaufleuten',     1500),
+    ('x-tra',          1500),
+    ('volkshaus',      1400),
+    ('tonhalle',       1400),
+    ('komplex',        1200),
+    ('opernhaus',      1100),
+    ('schauspielhaus',  750),
+    ('plaza',           600),
+    ('mascotte',        500),
+    ('moods',           300),
 ]
-DEFAULT_SIZE, DEFAULT_DUR = 300, 150
+DEFAULT_SIZE = 250
 
 
-def profile(venue, name):
-    blob = ((venue or '') + ' ' + (name or '')).lower()
-    for key, size, dur in KNOWN:
+def size_of(venue, title):
+    blob = ((venue or '') + ' ' + (title or '')).lower()
+    for key, n in SIZES:
         if key in blob:
-            return size, dur
-    return DEFAULT_SIZE, DEFAULT_DUR
+            return n
+    return DEFAULT_SIZE
 
 
-def get(url, tries=3):
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'zur-taxi-radar',
-        'Accept': 'application/json',
-    })
-    for i in range(tries):
+def call(path, params):
+    """Bearer по спецификация; при отказ пробва стария apiKey в адреса."""
+    url = BASE + path + '?' + urllib.parse.urlencode(params, doseq=True)
+    for use_bearer in (True, False):
+        u = url if use_bearer else url + '&apiKey=' + urllib.parse.quote(KEY)
+        headers = {'User-Agent': 'zur-taxi-radar', 'Accept': 'application/json'}
+        if use_bearer:
+            headers['Authorization'] = 'Bearer ' + KEY
+        req = urllib.request.Request(u, headers=headers)
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.load(r)
@@ -72,94 +83,146 @@ def get(url, tries=3):
             body = ''
             if hasattr(ex, 'read'):
                 try:
-                    body = ex.read()[:200].decode('utf-8', 'replace')
+                    body = ex.read()[:180].decode('utf-8', 'replace')
                 except Exception:
                     pass
-            if i == tries - 1:
-                print('    неуспех:', type(ex).__name__, str(ex)[:100], body)
+            if not use_bearer:
+                print('    неуспех:', type(ex).__name__, str(ex)[:90], body)
                 return None
-            time.sleep(2 + i * 3)
+            # Bearer не мина — мълчаливо пробваме резервния начин
     return None
+
+
+def pick(multi):
+    """title и подобните са обекти с езици."""
+    if isinstance(multi, str):
+        return multi
+    if not isinstance(multi, dict):
+        return ''
+    for lang in ('de', 'en', 'fr', 'it'):
+        v = multi.get(lang)
+        if v:
+            return str(v)
+    for v in multi.values():
+        if v:
+            return str(v)
+    return ''
+
+
+def load_locations():
+    """Имената и координатите на залите, наведнъж за целия радиус."""
+    locs, page = {}, 1
+    while page <= 10:
+        d = call('/locations', {'lat': LAT, 'lng': LNG, 'r': RADIUS,
+                                'page': page, 'perPage': 100})
+        if not d:
+            break
+        rows = d.get('locations') or d.get('datasets') or []
+        if not rows:
+            break
+        for l in rows:
+            locs[str(l.get('id'))] = {
+                'name': pick(l.get('title')) or l.get('city') or '',
+                'lat': l.get('lat'), 'lng': l.get('lng'),
+            }
+        print('   места, страница %d → %d' % (page, len(rows)))
+        if len(rows) < 100:
+            break
+        page += 1
+        time.sleep(0.6)
+    return locs
 
 
 def main():
     if not KEY:
         print('НЯМА КЛЮЧ. Вземи безплатен от eventfrog.ch и го сложи като')
         print('repo secret EVENTFROG_KEY (Settings → Secrets → Actions).')
-        print('Документация: https://docs.api.eventfrog.net/')
         sys.exit(1)
 
     today = datetime.date.today()
-    until = today + datetime.timedelta(days=21)
+    until = today + datetime.timedelta(days=DAYS_AHEAD)
 
-    out, page = [], 0
-    while page < 8:
-        q = {
-            'apiKey': KEY,
-            'perPage': 100,
-            'page': page,
-            'fromDate': today.isoformat(),
-            'toDate': until.isoformat(),
-        }
-        q.update(BBOX)
-        print('страница', page)
-        d = get(API + '?' + urllib.parse.urlencode(q))
+    print('тегля местата около Цюрих…')
+    locs = load_locations()
+    print('   общо места:', len(locs))
+
+    print('тегля събитията…')
+    raw, page = [], 1
+    while page <= 12:
+        d = call('/events', {
+            'lat': LAT, 'lng': LNG, 'r': RADIUS,
+            'from': today.isoformat(),
+            'to': until.isoformat(),
+            'page': page, 'perPage': 100,
+            'country': 'CH',
+        })
         if not d:
             break
-        rows = d.get('datasets') or d.get('events') or d.get('data') or []
+        rows = d.get('events') or d.get('datasets') or []
+        total = d.get('totalNumberOfResources')
+        print('   страница %d → %d записа%s'
+              % (page, len(rows), (' от %s' % total) if total else ''))
         if not rows:
-            print('   → празна')
             break
-        print('   →', len(rows), 'записа')
-
-        for e in rows:
-            start = (e.get('start') or e.get('startDate')
-                     or e.get('dateFrom') or '')
-            if not start:
-                continue
-            try:
-                dt = datetime.datetime.fromisoformat(
-                    str(start).replace('Z', '+00:00'))
-            except ValueError:
-                continue
-            day = dt.date()
-            if not (today <= day <= until):
-                continue
-
-            name = str(e.get('name') or e.get('title') or '').strip()
-            if len(name) < 2:
-                continue
-
-            loc = e.get('location') or {}
-            if not isinstance(loc, dict):
-                loc = {}
-            venue = str(loc.get('name') or e.get('locationName') or '').strip()
-
-            lat = loc.get('lat') or loc.get('latitude') or e.get('lat')
-            lng = loc.get('lng') or loc.get('longitude') or e.get('lng')
-            try:
-                lat, lng = float(lat), float(lng)
-            except (TypeError, ValueError):
-                lat, lng = 47.3769, 8.5417       # център, ако липсват
-
-            size, dur = profile(venue, name)
-            end = (dt + datetime.timedelta(minutes=dur)).strftime('%H:%M')
-
-            out.append({
-                'd': day.isoformat(),
-                't': dt.strftime('%H:%M'),
-                'end': end,
-                'name': name[:90],
-                'venue': (venue or 'Zürich')[:40],
-                'lat': round(lat, 5), 'lng': round(lng, 5),
-                'size': size,
-                'url': str(e.get('url') or '')[:200],
-            })
-
+        raw += rows
         if len(rows) < 100:
             break
         page += 1
-        time.sleep(1.0)
+        time.sleep(0.8)
+
+    out = []
+    for e in raw:
+        if e.get('cancelled') or e.get('visible') is False:
+            continue
+        begin = e.get('begin') or ''
+        if not begin:
+            continue
+        try:
+            dt = datetime.datetime.fromisoformat(str(begin).replace('Z', '+00:00'))
+        except ValueError:
+            continue
+        day = dt.date()
+        if not (today <= day <= until):
+            continue
+
+        title = pick(e.get('title'))
+        if len(title) < 2:
+            continue
+
+        # мястото: първо по locationIds, после по locationAlias
+        venue, lat, lng = '', None, None
+        for lid in (e.get('locationIds') or []):
+            l = locs.get(str(lid))
+            if l:
+                venue = l['name']
+                lat, lng = l['lat'], l['lng']
+                break
+        if not venue:
+            venue = pick(e.get('locationAlias'))
+        try:
+            lat, lng = float(lat), float(lng)
+        except (TypeError, ValueError):
+            lat, lng = LAT, LNG
+
+        end_txt = ''
+        endv = e.get('end')
+        if endv:
+            try:
+                end_txt = datetime.datetime.fromisoformat(
+                    str(endv).replace('Z', '+00:00')).strftime('%H:%M')
+            except ValueError:
+                end_txt = ''
+
+        out.append({
+            'd': day.isoformat(),
+            't': dt.strftime('%H:%M'),
+            'end': end_txt,
+            'name': title[:90],
+            'venue': (venue or 'Zürich')[:40],
+            'lat': round(lat, 5), 'lng': round(lng, 5),
+            'size': size_of(venue, title),
+            'url': str(e.get('url') or '')[:200],
+        })
 
     seen, keep = set(), []
     for e in sorted(out, key=lambda x: (x['d'], x['t'])):
@@ -168,16 +231,14 @@ def main():
             continue
         seen.add(sig)
         keep.append(e)
-
-    # най-полезни са големите: те правят опашката пред залата
-    keep.sort(key=lambda x: (x['d'], x['t']))
-    keep = keep[:200]
+    keep = keep[:250]
 
     print('общо събития:', len(keep))
     big = [e for e in keep if e['size'] >= 1000]
-    print('от тях големи (1000+):', len(big))
+    print('големи (1000+ души):', len(big))
     for e in big[:8]:
-        print('  ', e['d'], e['t'], '→', e['end'], '·', e['venue'], '·', e['name'][:38])
+        print('  ', e['d'], e['t'], '→', e['end'] or '?', '·',
+              e['venue'], '·', e['name'][:36])
 
     if not keep:
         print('НИЩО НЕ СЕ ИЗТЕГЛИ — не презаписвам стария файл')
@@ -188,7 +249,7 @@ def main():
         json.dump({
             'generated': datetime.datetime.now(datetime.timezone.utc)
                          .isoformat(timespec='minutes'),
-            'source': 'eventfrog',
+            'source': 'eventfrog-public-v1',
             'events': keep,
         }, f, ensure_ascii=False, separators=(',', ':'))
     print('записан data/events.json:', os.path.getsize('data/events.json'), 'байта')
