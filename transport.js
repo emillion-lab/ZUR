@@ -479,42 +479,7 @@
 
   // EVENTS-PANEL — събитията идват от data/events.json (Eventfrog).
   // Подреждаме по КРАЯ: таксито го интересува кога излизат хората.
-  function loadEvents(){
-    var c = cache.events;
-    if(c && Date.now() - c.at < 600000){ render(); return; }
-    busy = true; render();
-    fetch('data/events.json', {cache:'no-cache'})
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){
-        busy = false;
-        var rows = [];
-        (j && j.events ? j.events : []).forEach(function(e){
-          if(!e.end) return;
-          var endTs = new Date(e.d + 'T' + e.end + ':00').getTime();
-          // събитие, което свършва след полунощ, се води за следващия ден
-          var startTs = new Date(e.d + 'T' + e.t + ':00').getTime();
-          if(endTs < startTs) endTs += 86400000;
-          rows.push({
-            t: e.end,                       // показваме края, не началото
-            ts: endTs,
-            cat: '',
-            line: e.size >= 1000 ? '👥' + Math.round(e.size / 1000) + 'k'
-                 : e.size >= 500 ? '👥' + e.size : '',
-            from: e.name,
-            plat: '',
-            delay: 0,
-            st: e.venue,
-            lat: e.lat, lng: e.lng
-          });
-        });
-        rows.sort(function(a, b){ return a.ts - b.ts; });
-        cache.events = { rows: rows, at: Date.now(), live: false };
-        render();
-      })
-      .catch(function(){ busy = false; render(); });
-  }
-
-  function render(){
+function render(){
     if(!open) return;
     var body = document.getElementById('tp-body');
     var head = document.getElementById('tp-title');
