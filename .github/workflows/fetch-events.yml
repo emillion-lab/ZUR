@@ -1,6 +1,6 @@
 name: Fetch Events
-# Афишът на Цюрих. Краят на събитието е моментът, в който хиляда души
-# излизат наведнъж — това е, което интересува таксито.
+# Залите в Цюрих. Всеки източник е отделен — ако един се счупи,
+# останалите работят и това личи в лога.
 on:
   schedule:
     - cron: '40 4 * * *'
@@ -17,7 +17,7 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,7 +27,7 @@ jobs:
       - name: Prepare data dir
         run: mkdir -p data
 
-      - name: Fetch events
+      - name: Scrape venues
         continue-on-error: true
         run: python3 scripts/fetch_events.py 2>&1 | tee data/events-log.txt
 
@@ -36,6 +36,20 @@ jobs:
         run: |
           echo "── лог ──"
           cat data/events-log.txt || echo "няма лог"
+          echo ""
+          if [ -f data/events.json ]; then
+            python3 - <<'EOF'
+          import json, collections
+          d = json.load(open('data/events.json'))
+          ev = d.get('events') or []
+          print('събития:', len(ev))
+          c = collections.Counter(e['venue'] for e in ev)
+          for v, n in c.most_common():
+              print(f'  {v:16s} {n}')
+          EOF
+          else
+            echo "няма data/events.json"
+          fi
 
       - name: Commit
         if: always()
