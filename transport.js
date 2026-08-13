@@ -33,13 +33,17 @@
       ['Zürich Stadelhofen',  'Stadelhofen'],
       ['Zürich Flughafen',    'Flughafen']
     ],
-    // Регионалните спират на гаровите площади, не по градските спирки
+    // REGIONAL-STOPS-V2 — таблото на гарата връща влакове; автобусите
+    // имат собствени спирки. Тези тук са автобусните възли, откъдето
+    // идват хората от околните общини.
     bus: [
-      ['Zürich HB',              'HB'],
-      ['Zürich, Bahnhofquai/HB', 'Bahnhofquai'],
-      ['Zürich Oerlikon',        'Oerlikon'],
-      ['Zürich, Bellevue',       'Bellevue'],
-      ['Zürich Flughafen',       'Flughafen']
+      ['Zürich, Bahnhofquai/HB',   'Bahnhofquai'],
+      ['Zürich, Bellevue',         'Bellevue'],
+      ['Zürich, Central',          'Central'],
+      ['Zürich, Klusplatz',        'Klusplatz'],
+      ['Zürich, Bucheggplatz',     'Bucheggplatz'],
+      ['Zürich Flughafen, Bahnhof','Flughafen'],
+      ['Zürich Oerlikon, Bahnhof', 'Oerlikon']
     ],
     // INTL-WIDE — имената на терминала се разминават между базите,
     // затова се пробват няколко и се събира каквото върне
@@ -204,8 +208,12 @@
             // REGIONAL-BUS — градските линии в Цюрих са едно- или
             // двуцифрени (31, 46, 72); регионалните са трицифрени или
             // носят име на превозвач. Само вторите докарват клиенти.
+            // Едноцифрените са същински градски; двуцифрените вече
+            // минават, защото част от регионалните на ZVV са такива.
             var num = String(e.number || '').trim();
-            if(/^\d{1,2}$/.test(num)) return null;
+            if(/^\d$/.test(num)) return null;
+            // тези три са трамвайни заместващи линии в центъра
+            if(num === '31' || num === '46' || num === '72') return null;
           }
           // INTL-NOTRAM — Sihlquai е и трамвайна спирка. Предишната
           // версия пускаше всичко и таблото се напълни с T50/T51/T17,
