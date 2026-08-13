@@ -6,38 +6,38 @@
   известни спирки: 5
   --- суров запис ---
   ключове: ['arrival', 'available', 'departure', 'duration', 'intermediate_stations_count', 'legs', 'messages', 'price', 'provider', 'remaining', 'restrictions', 'status', 'transfer_type', 'transfer_type_key', 'uid']
-  arrival: {"date": "2026-08-13T17:40:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
+  arrival: {"date": "2026-08-13T18:30:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
   leg[-1] ключове: ['amenities', 'arrival', 'brand_id', 'cheapest_seat', 'departure', 'is_marketplace', 'layout_configuration', 'means_of_transport', 'operator_id', 'ride_id', 'seat_types', 'sub_brand_id', 'vehicle_details']
-  leg[-1].arrival: {"date": "2026-08-13T17:40:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
+  leg[-1].arrival: {"date": "2026-08-13T18:30:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
   -------------------
-Milan        → 11 курса
+Milan        → 10 курса
 Munich       → 9 курса
 Stuttgart    → 3 курса
 Frankfurt    → 6 курса
 Paris        → 4 курса
 Lyon         → 5 курса
-Vienna       → 19 курса
+Vienna       → 13 курса
 Prague       → 15 курса
-Berlin       → 20 курса
+Berlin       → 19 курса
 Belgrade     → 4 курса
 Zagreb       → 7 курса
 Ljubljana    → 6 курса
-Budapest     → 11 курса
+Budapest     → 10 курса
 Amsterdam    → 11 курса
 Brussels     → 1 курса
 Barcelona    → 18 курса
-Venice       → 15 курса
-Florence     → 7 курса
-Turin        → 10 курса
-Sarajevo     → 4 курса
-Skopje       → 6 курса
+Venice       → 14 курса
+Florence     → 6 курса
+Turin        → 9 курса
+Sarajevo     → 3 курса
+Skopje       → 8 курса
 Sofia        → 2 курса
 общо пристигащи: 70
    Zurich                 70
 различни station_id в отговорите:
-   dcbab299  Zurich                       194
-   17:40 Milan → Zurich
+   dcbab299  Zurich                       183
    17:50 Munich → Zurich
    18:15 Munich → Zurich
    18:30 Milan → Zurich
-записан data/flixbus.json: 8942 байта
+   19:05 Munich → Zurich
+записан data/flixbus.json: 8948 байта
