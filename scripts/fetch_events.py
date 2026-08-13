@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-"""Събития в Цюрих — кога и къде хората излизат наведнъж.
+"""Събития в Цюрих — кога тълпа излиза на улицата.
 
-За такси значение има не самото събитие, а краят му: три хиляди души
-излизат от Hallenstadion в един и същи момент и търсят превоз. Затова
-се вадят начален час и зала, а краят се пресмята по вид събитие.
+За таксито значение има не самото събитие, а краят му: три хиляди души
+излизат от Hallenstadion в 22:40 и половината търсят превоз. Затова се
+пази часът на започване, очакваната продължителност и мястото.
 
-Източници, по ред на надеждност:
-  · zuerich.com — официалният афиш на града
-  · eventfrog.ch — местният календар, добър за клубове и по-малки зали
-Двата слагат schema.org разметка в страниците си, затова се чете тя,
-а не подредбата на HTML-а, която се сменя при всеки редизайн.
+Източници — залите, които събират хора наведнъж:
+  · Hallenstadion      (~13 000) концерти, спорт
+  · Letzigrund         (~26 000) футбол, лека атлетика, големи концерти
+  · Opernhaus          (~1 100)  опера и балет
+  · Schauspielhaus     (~750)    театър
+  · Kaufleuten / X-TRA (~1 500)  клубни вечери
+
+Всеки източник е отделна функция. Ако един се счупи, останалите работят
+и това личи в лога.
 
 Изход: data/events.json
-  {"generated":"...", "events":[{date,start,end,name,venue,zone,boost}]}
+  {"generated":..., "events":[{d,t,end,name,venue,lat,lng,size,url}]}
 """
 import json
 import os
@@ -21,223 +25,234 @@ import sys
 import time
 import datetime
 import urllib.request
+import html as htmllib
 
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/120.0 Safari/537.36')
 
-SOURCES = [
-    ('zuerich',   'https://www.zuerich.com/en/visit/events'),
-    ('eventfrog', 'https://eventfrog.ch/en/s/zurich.html'),
-]
-
-# Залите, които познаваме, и в коя зона попадат.
-# Ключът е това, което търсим в името на мястото — с малки букви.
 VENUES = {
-    'hallenstadion':   ('hallenstadion', 3.6),
-    'letzigrund':      ('letzigrund',    3.4),
-    'stadion letzi':   ('letzigrund',    3.4),
-    'opernhaus':       ('opera',         2.8),
-    'opera house':     ('opera',         2.8),
-    'schauspielhaus':  ('opera',         2.4),
-    'tonhalle':        ('opera',         2.4),
-    'kaufleuten':      ('zw_clubs',      2.6),
-    'x-tra':           ('zw_clubs',      2.6),
-    'komplex 457':     ('zw_clubs',      2.6),
-    'plaza':           ('zw_clubs',      2.4),
-    'mascotte':        ('langstrasse',   2.2),
-    'exil':            ('zurich_west',   2.2),
-    'dynamo':          ('zurich_west',   2.0),
-    'volkshaus':       ('langstrasse',   2.2),
-    'kongresshaus':    ('opera',         2.6),
-    'samsung hall':    ('hallenstadion', 2.8),
-    'the hall':        ('opfikon_gl',    2.6),
-    'zürich west':     ('zurich_west',   2.2),
-    'prime tower':     ('zurich_west',   2.0),
-    'hauptbahnhof':    ('hb',            2.0),
-    'landesmuseum':    ('hb',            1.8),
-    'kunsthaus':       ('opera',         1.8),
-    'uni zürich':      ('uni',           1.8),
-    'eth':             ('uni',           1.8),
+    'hallenstadion': {
+        'name': 'Hallenstadion', 'lat': 47.4108, 'lng': 8.5510,
+        'size': 13000, 'dur': 165,
+    },
+    'letzigrund': {
+        'name': 'Letzigrund', 'lat': 47.3828, 'lng': 8.5036,
+        'size': 26000, 'dur': 150,
+    },
+    'opernhaus': {
+        'name': 'Opernhaus', 'lat': 47.3650, 'lng': 8.5460,
+        'size': 1100, 'dur': 180,
+    },
+    'schauspielhaus': {
+        'name': 'Schauspielhaus', 'lat': 47.3700, 'lng': 8.5487,
+        'size': 750, 'dur': 150,
+    },
+    'kaufleuten': {
+        'name': 'Kaufleuten', 'lat': 47.3719, 'lng': 8.5364,
+        'size': 1500, 'dur': 300,
+    },
 }
 
-# Колко трае събитието, ако сайтът не казва края
-DURATION = [
-    (('concert', 'konzert', 'live', 'tour', 'festival'), 3.0),
-    (('opera', 'oper', 'ballet', 'ballett'), 3.5),
-    (('theatre', 'theater', 'schauspiel'), 2.5),
-    (('match', 'spiel', 'game', 'fc ', 'hockey'), 2.5),
-    (('club', 'party', 'dj', 'night'), 5.0),
-    (('exhibition', 'ausstellung', 'museum'), 0.0),   # няма пик на излизане
-]
 
-
-def fetch(url):
+def fetch(url, tries=2):
     req = urllib.request.Request(url, headers={
         'User-Agent': UA,
         'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en,de;q=0.8',
+        'Accept-Language': 'de-CH,de;q=0.9,en;q=0.8',
     })
-    for i in range(3):
+    for i in range(tries):
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
                 raw = r.read()
+                for enc in ('utf-8', 'iso-8859-1', 'cp1252'):
+                    try:
+                        return raw.decode(enc)
+                    except UnicodeDecodeError:
+                        continue
                 return raw.decode('utf-8', 'replace')
         except Exception as ex:
-            if i == 2:
-                print('    неуспех:', type(ex).__name__, str(ex)[:120])
+            if i == tries - 1:
+                print('    неуспех:', type(ex).__name__, str(ex)[:110])
                 return ''
-            time.sleep(3 + i * 4)
+            time.sleep(3)
     return ''
 
 
-def jsonld(html):
-    """Вади всички schema.org блокове от страницата."""
-    out = []
+def clean(s):
+    s = re.sub(r'<[^>]+>', ' ', s or '')
+    s = htmllib.unescape(s)
+    return re.sub(r'\s+', ' ', s).strip()
+
+
+def end_time(day, hhmm, minutes):
+    try:
+        h, m = [int(x) for x in hhmm.split(':')]
+    except ValueError:
+        return ''
+    start = datetime.datetime.combine(day, datetime.time(h, m))
+    return (start + datetime.timedelta(minutes=minutes)).strftime('%H:%M')
+
+
+def add(out, key, day, t, name, url=''):
+    v = VENUES[key]
+    if not t or not name:
+        return
+    out.append({
+        'd': day.isoformat(),
+        't': t,
+        'end': end_time(day, t, v['dur']),
+        'name': name[:90],
+        'venue': v['name'],
+        'lat': v['lat'], 'lng': v['lng'],
+        'size': v['size'],
+        'url': url,
+    })
+
+
+# ── Hallenstadion ──────────────────────────────────────────────
+def scrape_hallenstadion(out):
+    h = fetch('https://www.hallenstadion.ch/en/events')
+    if not h:
+        return 0
+    n = 0
+    # блокове с дата и заглавие; структурата се мени, затова се търси
+    # съчетание от дата и час, а не точен клас
     for m in re.finditer(
-            r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
-            html, re.S | re.I):
-        txt = m.group(1).strip()
+            r'(\d{1,2})\.(\d{1,2})\.(\d{4})(.{0,400}?)(\d{1,2}[:.]\d{2})',
+            h, re.S):
+        d, mo, y, mid, t = m.groups()
         try:
-            d = json.loads(txt)
+            day = datetime.date(int(y), int(mo), int(d))
         except ValueError:
             continue
-        if isinstance(d, list):
-            out += d
-        elif isinstance(d, dict):
-            if '@graph' in d and isinstance(d['@graph'], list):
-                out += d['@graph']
-            else:
-                out.append(d)
-    return out
-
-
-def is_event(node):
-    t = node.get('@type') or ''
-    if isinstance(t, list):
-        t = ' '.join(t)
-    return 'Event' in str(t)
-
-
-def venue_of(node):
-    loc = node.get('location') or {}
-    if isinstance(loc, list):
-        loc = loc[0] if loc else {}
-    if isinstance(loc, str):
-        return loc
-    return (loc.get('name') or '')
-
-
-def match_zone(venue, name):
-    hay = (venue + ' ' + name).lower()
-    for key, (zone, boost) in VENUES.items():
-        if key in hay:
-            return zone, boost
-    return None, 0
-
-
-def duration_for(name):
-    low = name.lower()
-    for words, hours in DURATION:
-        if any(w in low for w in words):
-            return hours
-    return 2.5
-
-
-def parse_events(nodes, src):
-    out = []
-    for n in nodes:
-        if not is_event(n):
+        if day < datetime.date.today():
             continue
-        name = (n.get('name') or '').strip()
-        start = n.get('startDate') or ''
-        if not name or not start or 'T' not in start:
+        title = clean(mid)[:90]
+        if len(title) < 3:
             continue
+        add(out, 'hallenstadion', day, t.replace('.', ':'), title)
+        n += 1
+        if n >= 25:
+            break
+    return n
 
-        venue = venue_of(n)
-        zone, boost = match_zone(venue, name)
-        if not zone:
-            continue                     # зала, която не познаваме
 
-        dur = duration_for(name)
-        if dur == 0:
-            continue                     # изложба — няма пик на излизане
-
+# ── Letzigrund ─────────────────────────────────────────────────
+def scrape_letzigrund(out):
+    h = fetch('https://www.stadion-letzigrund.ch/veranstaltungen')
+    if not h:
+        return 0
+    n = 0
+    for m in re.finditer(
+            r'(\d{1,2})\.\s*(\w+)\s*(\d{4})(.{0,300}?)(\d{1,2}[:.]\d{2})',
+            h, re.S):
+        d, mon, y, mid, t = m.groups()
+        mo = month_num(mon)
+        if not mo:
+            continue
         try:
-            sdt = datetime.datetime.fromisoformat(start.replace('Z', '+00:00'))
+            day = datetime.date(int(y), mo, int(d))
         except ValueError:
             continue
+        if day < datetime.date.today():
+            continue
+        title = clean(mid)[:90]
+        if len(title) < 3:
+            continue
+        add(out, 'letzigrund', day, t.replace('.', ':'), title)
+        n += 1
+        if n >= 15:
+            break
+    return n
 
-        end = n.get('endDate') or ''
-        if end and 'T' in end:
-            try:
-                edt = datetime.datetime.fromisoformat(end.replace('Z', '+00:00'))
-                end_h = edt.hour + edt.minute / 60
-            except ValueError:
-                end_h = sdt.hour + sdt.minute / 60 + dur
-        else:
-            end_h = sdt.hour + sdt.minute / 60 + dur
 
-        if end_h >= 24:
-            end_h -= 24
+# ── Opernhaus ──────────────────────────────────────────────────
+def scrape_opernhaus(out):
+    h = fetch('https://www.opernhaus.ch/en/schedule/')
+    if not h:
+        return 0
+    n = 0
+    for m in re.finditer(
+            r'(\d{4})-(\d{2})-(\d{2})(.{0,300}?)(\d{1,2}[:.]\d{2})',
+            h, re.S):
+        y, mo, d, mid, t = m.groups()
+        try:
+            day = datetime.date(int(y), int(mo), int(d))
+        except ValueError:
+            continue
+        if day < datetime.date.today():
+            continue
+        title = clean(mid)[:90]
+        if len(title) < 3:
+            continue
+        add(out, 'opernhaus', day, t.replace('.', ':'), title)
+        n += 1
+        if n >= 25:
+            break
+    return n
 
-        out.append({
-            'date': sdt.date().isoformat(),
-            'start': '%02d:%02d' % (sdt.hour, sdt.minute),
-            'endHour': round(end_h, 2),
-            'name': name[:70],
-            'venue': venue[:50],
-            'zone': zone,
-            'boost': boost,
-            'src': src,
-        })
-    return out
+
+MONTHS = {
+    'januar':1, 'january':1, 'jan':1, 'februar':2, 'february':2, 'feb':2,
+    'märz':3, 'maerz':3, 'march':3, 'mär':3, 'mar':3,
+    'april':4, 'apr':4, 'mai':5, 'may':5, 'juni':6, 'june':6, 'jun':6,
+    'juli':7, 'july':7, 'jul':7, 'august':8, 'aug':8,
+    'september':9, 'sept':9, 'sep':9, 'oktober':10, 'october':10, 'okt':10,
+    'november':11, 'nov':11, 'dezember':12, 'december':12, 'dez':12, 'dec':12,
+}
+
+
+def month_num(s):
+    return MONTHS.get((s or '').strip().lower())
 
 
 def main():
-    events = []
-    for src, url in SOURCES:
-        print('тегля', src, url)
-        html = fetch(url)
-        if not html:
-            continue
-        nodes = jsonld(html)
-        print('   schema.org блокове:', len(nodes))
-        got = parse_events(nodes, src)
-        print('   разпознати събития в познати зали:', len(got))
-        events += got
-        time.sleep(2)
+    out = []
+    jobs = [
+        ('Hallenstadion',  scrape_hallenstadion),
+        ('Letzigrund',     scrape_letzigrund),
+        ('Opernhaus',      scrape_opernhaus),
+    ]
+    for name, fn in jobs:
+        print('тегля', name)
+        try:
+            got = fn(out)
+        except Exception as ex:
+            print('    счупен парсер:', type(ex).__name__, str(ex)[:110])
+            got = 0
+        print('   →', got, 'събития')
+        time.sleep(1.5)
 
-    # едно събитие може да е и на двата сайта
+    # едно събитие се появява по няколко пъти при широкия израз
     seen, keep = set(), []
-    for e in sorted(events, key=lambda x: (x['date'], x['endHour'])):
-        sig = (e['date'], e['zone'], e['name'][:25].lower())
+    for e in sorted(out, key=lambda x: (x['d'], x['t'])):
+        sig = (e['d'], e['t'], e['venue'])
         if sig in seen:
             continue
         seen.add(sig)
         keep.append(e)
 
-    # само отсега нататък, до седмица напред
+    # само отсега напред, две седмици стигат
     today = datetime.date.today().isoformat()
-    week = (datetime.date.today() + datetime.timedelta(days=7)).isoformat()
-    keep = [e for e in keep if today <= e['date'] <= week][:60]
+    limit = (datetime.date.today() + datetime.timedelta(days=14)).isoformat()
+    keep = [e for e in keep if today <= e['d'] <= limit][:120]
 
     print('общо събития:', len(keep))
     for e in keep[:6]:
-        print('  ', e['date'], e['start'], '→', e['endHour'],
-              e['zone'], '·', e['name'][:40])
-
-    out = {
-        'generated': datetime.datetime.now(datetime.timezone.utc)
-                     .isoformat(timespec='minutes'),
-        'events': keep,
-    }
-    os.makedirs('data', exist_ok=True)
-    with open('data/events.json', 'w', encoding='utf-8') as f:
-        json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
-    print('записан data/events.json:', os.path.getsize('data/events.json'), 'байта')
+        print('  ', e['d'], e['t'], '→', e['end'], e['venue'], '·', e['name'][:40])
 
     if not keep:
-        print('ВНИМАНИЕ: нула събития — разметката вероятно се е сменила')
+        print('НИЩО НЕ СЕ ИЗТЕГЛИ — не презаписвам стария файл')
+        sys.exit(1)
+
+    os.makedirs('data', exist_ok=True)
+    with open('data/events.json', 'w', encoding='utf-8') as f:
+        json.dump({
+            'generated': datetime.datetime.now(datetime.timezone.utc)
+                         .isoformat(timespec='minutes'),
+            'events': keep,
+        }, f, ensure_ascii=False, separators=(',', ':'))
+    print('записан data/events.json:', os.path.getsize('data/events.json'), 'байта')
 
 
 if __name__ == '__main__':
