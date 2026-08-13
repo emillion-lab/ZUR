@@ -1,3 +1,2 @@
 НЯМА КЛЮЧ. Вземи безплатен от eventfrog.ch и го сложи като
 repo secret EVENTFROG_KEY (Settings → Secrets → Actions).
-Документация: https://docs.api.eventfrog.net/
