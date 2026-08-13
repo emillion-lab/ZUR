@@ -327,16 +327,20 @@
       .then(function(j){
         busy = false;
         if(!j || !j.arrivals){ cache.intl = {rows:[], at:Date.now(), live:false}; render(); return; }
+        // INTL-ROW — „→ Zurich" не носеше нищо; важното е коя автогара.
+        // `st` служи и за завеждане на картата: PLACES знае Sihlquai.
         var rows = j.arrivals.map(function(r){
+          var stop = r.station && r.station !== 'Zurich'
+                   ? r.station : 'Sihlquai';
           return {
             t: r.t,
             ts: (r.ts || 0) * 1000,
             cat: '',
             line: r.operator || 'FlixBus',
             from: r.from + (r.transfers ? ' · ' + r.transfers + '×' : ''),
-            plat: r.station === 'Sihlquai' ? '' : (r.station || ''),
+            plat: '',
             delay: 0,
-            st: r.station || 'Sihlquai'
+            st: stop
           };
         });
         cache.intl = { rows: rows, at: new Date(j.generated).getTime(), live: false };
