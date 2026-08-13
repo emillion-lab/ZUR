@@ -1,0 +1,9 @@
+тегля Hallenstadion
+   → 0 събития
+тегля Letzigrund
+    неуспех: URLError <urlopen error [Errno -2] Name or service not known>
+   → 0 събития
+тегля Opernhaus
+   → 0 събития
+общо събития: 0
+НИЩО НЕ СЕ ИЗТЕГЛИ — не презаписвам стария файл
