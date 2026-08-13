@@ -1,6 +1,6 @@
 name: Fetch Events
-# Залите в Цюрих. Всеки източник е отделен — ако един се счупи,
-# останалите работят и това личи в лога.
+# Събития от Eventfrog — най-големият швейцарски календар.
+# Изисква repo secret EVENTFROG_KEY (безплатен ключ от eventfrog.ch).
 on:
   schedule:
     - cron: '40 4 * * *'
@@ -27,8 +27,10 @@ jobs:
       - name: Prepare data dir
         run: mkdir -p data
 
-      - name: Scrape venues
+      - name: Fetch events
         continue-on-error: true
+        env:
+          EVENTFROG_KEY: ${{ secrets.EVENTFROG_KEY }}
         run: python3 scripts/fetch_events.py 2>&1 | tee data/events-log.txt
 
       - name: Summary
@@ -44,8 +46,8 @@ jobs:
           ev = d.get('events') or []
           print('събития:', len(ev))
           c = collections.Counter(e['venue'] for e in ev)
-          for v, n in c.most_common():
-              print(f'  {v:16s} {n}')
+          for v, n in c.most_common(10):
+              print(f'  {v:26s} {n}')
           EOF
           else
             echo "няма data/events.json"
