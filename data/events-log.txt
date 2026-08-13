@@ -3,14 +3,24 @@
    страница 2 → 675 от 1675
    общо изтеглени: 1675
 тегля 466 зали по идентификатор…
-    неуспех: HTTPError HTTP Error 414: Request-URI Too Large 
-    неуспех: HTTPError HTTP Error 414: Request-URI Too Large 
-   зали 400–466 → 66
-   намерени: 66
-общо събития: 300 · с разпозната зала: 94
-големи (1000+ души): 4
-   2026-08-13 20:00 → 23:45 · Zürich · Sundown - Kaufleuten Terrasse
-   2026-08-14 20:00 → 23:45 · Zürich · Afterglow - Kaufleuten Terrasse
-   2026-08-15 20:00 → 23:45 · Zürich · Strangers on the Dancefloor - Kauf
-   2026-08-15 23:00 → 04:00 · Zürich · LOCO HOUSE @KAUFLEUTEN KLUB ZÜRICH
-записан data/events.json: 80310 байта
+   зали 0–40 → 40
+   зали 40–80 → 40
+   зали 80–120 → 40
+   зали 120–160 → 40
+   зали 160–200 → 40
+   зали 200–240 → 40
+   зали 240–280 → 40
+   зали 280–320 → 40
+   зали 320–360 → 40
+   зали 360–400 → 40
+   зали 400–440 → 40
+   зали 440–466 → 26
+   намерени: 466
+общо събития: 300 · с разпозната зала: 300
+големи (1000+ души): 5
+   2026-08-13 20:00 → 23:45 · Kaufleuten Terrasse · Sundown - Kaufleuten Terrasse
+   2026-08-14 20:00 → 23:45 · Kaufleuten Terrasse · Afterglow - Kaufleuten Terrasse
+   2026-08-14 23:00 → 04:00 · Kaufleuten Club · Hyper 2000
+   2026-08-15 20:00 → 23:45 · Kaufleuten Terrasse · Strangers on the Dancefloor - Kauf
+   2026-08-15 23:00 → 04:00 · Kaufleuten Club · LOCO HOUSE @KAUFLEUTEN KLUB ZÜRICH
+записан data/events.json: 82606 байта
