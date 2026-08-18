@@ -10,4 +10,4 @@
 тегля пристигащи: Zürich, Bahnhof Enge
 тегля пристигащи: Zürich, Carparkplatz Sihlquai
 общо пристигащи: 89 · влак 40 · трамвай 40 · автобус 9 · международни 0
-записан data/transport.json: 10227 байта
+записан data/transport.json: 10333 байта
