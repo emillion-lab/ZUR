@@ -4,40 +4,50 @@
   stations → 2 записа
   cities → 3 записа
   известни спирки: 5
-  --- суров запис ---
-  ключове: ['arrival', 'available', 'departure', 'duration', 'intermediate_stations_count', 'legs', 'messages', 'price', 'provider', 'remaining', 'restrictions', 'status', 'transfer_type', 'transfer_type_key', 'uid']
-  arrival: {"date": "2026-08-21T01:00:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
-  leg[-1] ключове: ['amenities', 'arrival', 'brand_id', 'cheapest_seat', 'departure', 'is_marketplace', 'layout_configuration', 'means_of_transport', 'operator_id', 'ride_id', 'seat_types', 'sub_brand_id', 'vehicle_details']
-  leg[-1].arrival: {"date": "2026-08-21T01:00:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
-  -------------------
-Milan        → 4 курса
-Munich       → 2 курса
-Stuttgart    → 6 курса
-Frankfurt    → 5 курса
-Paris        → 1 курса
-Lyon         → 2 курса
-Vienna       → 6 курса
-Prague       → 5 курса
-Berlin       → 19 курса
-Belgrade     → 2 курса
-Zagreb       → 6 курса
-Ljubljana    → 3 курса
-Budapest     → 6 курса
-Amsterdam    → 3 курса
-Brussels     → 1 курса
-Barcelona    → 17 курса
-Venice       → 8 курса
-Florence     → 3 курса
-Turin        → 5 курса
-Sarajevo     → 5 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Milan        → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Munich       → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Stuttgart    → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Frankfurt    → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Paris        → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Lyon         → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Vienna       → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Prague       → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Berlin       → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Belgrade     → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Zagreb       → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Ljubljana    → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Budapest     → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Amsterdam    → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Brussels     → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Barcelona    → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Venice       → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Florence     → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Turin        → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Sarajevo     → 0 курса
+    неуспех: HTTPError HTTP Error 400: Bad Request
 Skopje       → 0 курса
-Sofia        → 1 курса
-общо пристигащи: 70
-   Zurich                 70
+    неуспех: HTTPError HTTP Error 400: Bad Request
+Sofia        → 0 курса
+общо пристигащи: 0
 различни station_id в отговорите:
-   dcbab299  Zurich                       110
-   01:00 Milan → Zurich
-   01:40 Milan → Zurich
-   01:55 Stuttgart → Zurich
-   01:55 Frankfurt → Zurich
-записан data/flixbus.json: 9001 байта
+НИЩО НЕ СЕ ИЗТЕГЛИ — не презаписвам стария файл
