@@ -1,13 +1,13 @@
 тегля събитията…
-   страница 1 → 1000 от 1898
-   страница 2 → 898 от 1898
-   общо изтеглени: 1898
-тегля 588 зали по идентификатор…
-   зали 0–40 → 39
+   страница 1 → 1000 от 1915
+   страница 2 → 915 от 1915
+   общо изтеглени: 1915
+тегля 598 зали по идентификатор…
+   зали 0–40 → 40
    зали 40–80 → 40
    зали 80–120 → 40
    зали 120–160 → 40
-   зали 160–200 → 39
+   зали 160–200 → 40
    зали 200–240 → 40
    зали 240–280 → 40
    зали 280–320 → 40
@@ -17,16 +17,13 @@
    зали 440–480 → 40
    зали 480–520 → 40
    зали 520–560 → 40
-   зали 560–588 → 28
-   намерени: 586
-общо събития: 300 · с разпозната зала: 293
-големи (1000+ души): 9
-   2026-08-26 10:00 → 12:00 · Tonhalle Zürich · Conductors' Academy: Masterclass 1
-   2026-08-26 19:30 → 21:30 · Tonhalle Zürich · Conductors' Academy: Masterclass 2
-   2026-08-27 10:00 → 12:00 · Tonhalle Zürich · Conductors' Academy: Masterclass 3
-   2026-08-27 13:45 → 15:45 · Tonhalle Zürich · Conductors' Academy: Masterclass 4
+   зали 560–598 → 37
+   намерени: 597
+общо събития: 300 · с разпозната зала: 300
+големи (1000+ души): 5
    2026-08-27 20:00 → 23:45 · Kaufleuten Terrasse · Sundown - Kaufleuten Terrasse
-   2026-08-28 19:30 → 21:00 · Buchhandlung im Volkshaus · Tine Melzer – Buchtaufe «Lotto»
    2026-08-28 19:30 → 21:30 · Tonhalle Zürich · Conductors' Academy: Abschlusskonz
-   2026-08-28 20:00 → 23:45 · Kaufleuten Terrasse · Afterglow - Kaufleuten Terrasse
-записан data/events.json: 83299 байта
+   2026-08-28 19:30 → 21:00 · Buchhandlung im Volkshaus · Tine Melzer – Buchtaufe «Lotto»
+   2026-08-28 23:00 → 05:00 · Kaufleuten Club · Deborah De Luca
+   2026-08-29 18:00 → 23:45 · Kaufleuten Terrasse · Strangers on the Dancefloor - Kauf
+записан data/events.json: 83650 байта
