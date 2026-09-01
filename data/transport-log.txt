@@ -1,7 +1,5 @@
 тегля пристигащи: Zürich HB
-  пропуснато: Zürich HB — <urlopen error timed out>
 тегля пристигащи: Zürich Oerlikon
-  пропуснато: Zürich Oerlikon — <urlopen error timed out>
 тегля пристигащи: Zürich Stadelhofen
 тегля пристигащи: Zürich Flughafen
 тегля пристигащи: Zürich, Bahnhofquai/HB
@@ -11,5 +9,5 @@
 тегля пристигащи: Zürich, Stauffacher
 тегля пристигащи: Zürich, Bahnhof Enge
 тегля пристигащи: Zürich, Carparkplatz Sihlquai
-общо пристигащи: 22 · влак 0 · трамвай 22 · автобус 0 · международни 0
-записан data/transport.json: 2664 байта
+общо пристигащи: 90 · влак 40 · трамвай 40 · автобус 10 · международни 0
+записан data/transport.json: 10338 байта
