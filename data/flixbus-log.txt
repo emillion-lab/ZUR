@@ -6,38 +6,38 @@
   известни спирки: 5
   --- суров запис ---
   ключове: ['arrival', 'available', 'departure', 'duration', 'intermediate_stations_count', 'legs', 'messages', 'price', 'provider', 'remaining', 'restrictions', 'status', 'transfer_type', 'transfer_type_key', 'uid']
-  arrival: {"date": "2026-09-03T21:40:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
+  arrival: {"date": "2026-09-04T03:35:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
   leg[-1] ключове: ['amenities', 'arrival', 'brand_id', 'cheapest_seat', 'departure', 'is_marketplace', 'layout_configuration', 'means_of_transport', 'operator_id', 'ride_id', 'seat_types', 'sub_brand_id', 'vehicle_details']
-  leg[-1].arrival: {"date": "2026-09-03T21:40:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
+  leg[-1].arrival: {"date": "2026-09-04T03:35:00+02:00", "city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c", "station_id": "dcbab299-9603-11e6-9066-549f350fcb0c"}
   -------------------
-Milan        → 6 курса
-Munich       → 4 курса
-Stuttgart    → 3 курса
-Frankfurt    → 4 курса
-Paris        → 2 курса
-Lyon         → 3 курса
-Vienna       → 8 курса
-Prague       → 9 курса
-Berlin       → 20 курса
-Belgrade     → 4 курса
-Zagreb       → 7 курса
-Ljubljana    → 4 курса
-Budapest     → 9 курса
-Amsterdam    → 4 курса
-Brussels     → 3 курса
-Barcelona    → 6 курса
-Venice       → 10 курса
-Florence     → 4 курса
-Turin        → 6 курса
-Sarajevo     → 2 курса
-Skopje       → 1 курса
-Sofia        → 1 курса
-общо пристигащи: 70
-   Zurich                 70
+Milan        → 2 курса
+Munich       → 2 курса
+Stuttgart    → 6 курса
+Frankfurt    → 2 курса
+Paris        → 1 курса
+Lyon         → 2 курса
+Vienna       → 4 курса
+Prague       → 4 курса
+Berlin       → 10 курса
+Belgrade     → 0 курса
+Zagreb       → 4 курса
+Ljubljana    → 3 курса
+Budapest     → 3 курса
+Amsterdam    → 2 курса
+Brussels     → 1 курса
+Barcelona    → 4 курса
+Venice       → 5 курса
+Florence     → 3 курса
+Turin        → 4 курса
+Sarajevo     → 1 курса
+Skopje       → 0 курса
+Sofia        → 0 курса
+общо пристигащи: 51
+   Zurich                 51
 различни station_id в отговорите:
-   dcbab299  Zurich                       120
-   21:00 Stuttgart → Zurich
-   21:40 Milan → Zurich
-   21:40 Munich → Zurich
-   23:20 Milan → Zurich
-записан data/flixbus.json: 8977 байта
+   dcbab299  Zurich                       63
+   03:30 Stuttgart → Zurich
+   03:35 Milan → Zurich
+   04:45 Stuttgart → Zurich
+   05:10 Milan → Zurich
+записан data/flixbus.json: 6571 байта
