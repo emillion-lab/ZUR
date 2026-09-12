@@ -1,18 +1,18 @@
 тегля събитията…
-   страница 1 → 1000 от 2226
-   страница 2 → 1000 от 2226
-   страница 3 → 226 от 2226
-   общо изтеглени: 2226
-тегля 716 зали по идентификатор…
+   страница 1 → 1000 от 2248
+   страница 2 → 1000 от 2248
+   страница 3 → 248 от 2248
+   общо изтеглени: 2248
+тегля 724 зали по идентификатор…
    зали 0–40 → 40
    зали 40–80 → 40
-   зали 80–120 → 40
+   зали 80–120 → 39
    зали 120–160 → 40
-   зали 160–200 → 39
-   зали 200–240 → 39
+   зали 160–200 → 40
+   зали 200–240 → 40
    зали 240–280 → 40
-   зали 280–320 → 39
-   зали 320–360 → 39
+   зали 280–320 → 40
+   зали 320–360 → 40
    зали 360–400 → 40
    зали 400–440 → 40
    зали 440–480 → 40
@@ -21,16 +21,17 @@
    зали 560–600 → 40
    зали 600–640 → 40
    зали 640–680 → 39
-   зали 680–716 → 36
-   намерени: 711
-общо събития: 300 · с разпозната зала: 296
-големи (1000+ души): 10
-   2026-09-11 17:00 → 23:59 · x-tra Musikcafé · La Candelaria: "El Grito"  Fiesta 
-   2026-09-11 19:30 → 21:00 · Volkshaus Zürich · Biswa Kalyan Rath Live in Zurich
-   2026-09-11 20:00 → 22:30 · Volkshaus · Broilers - SOLD OUT
-   2026-09-11 20:00 → 23:45 · Kaufleuten Terrasse · Afterglow - Kaufleuten Terrasse
-   2026-09-11 23:00 → 05:00 · Kaufleuten Club · Kaufhouse
+   зали 680–720 → 40
+   зали 720–724 → 4
+   намерени: 722
+общо събития: 300 · с разпозната зала: 298
+големи (1000+ души): 8
    2026-09-12 19:30 → 21:45 · Volkshaus Zürich · GKW Live Podcast x WOZ
    2026-09-12 20:00 → 22:30 · Volkshaus · Broilers - SOLD OUT
    2026-09-12 20:00 → 22:20 · Kongresshaus Zürich · Paul Panzer - «Schöne neue Welt - 
-записан data/events.json: 82113 байта
+   2026-09-12 20:00 → 23:45 · Kaufleuten Terrasse · Strangers on the Dancefloor - Kauf
+   2026-09-12 23:00 → 04:00 · Kaufleuten Club · LOCO HOUSE @KAUFLEUTEN KLUB ZÜRICH
+   2026-09-13 16:00 → 18:00 · Yonex Badmintonhalle · ZFG Sunday Smashes -Social Badmint
+   2026-09-13 19:00 → 21:20 · Kongresshaus Zürich · Paul Panzer - «Schöne neue Welt - 
+   2026-09-13 19:30 → 21:30 · Tonhalle Zürich · Klavierrezital: Francesco Piemonte
+записан data/events.json: 83368 байта
