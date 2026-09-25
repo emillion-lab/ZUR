@@ -1,34 +1,34 @@
 тегля събитията…
-   страница 1 → 1000 от 2014
-   страница 2 → 1000 от 2014
-   страница 3 → 14 от 2014
-   общо изтеглени: 2014
-тегля 630 зали по идентификатор…
+   страница 1 → 1000 от 2031
+   страница 2 → 1000 от 2031
+   страница 3 → 31 от 2031
+   общо изтеглени: 2031
+тегля 614 зали по идентификатор…
    зали 0–40 → 40
-   зали 40–80 → 40
+   зали 40–80 → 39
    зали 80–120 → 40
-   зали 120–160 → 38
-   зали 160–200 → 39
+   зали 120–160 → 40
+   зали 160–200 → 40
    зали 200–240 → 40
    зали 240–280 → 40
    зали 280–320 → 39
-   зали 320–360 → 39
-   зали 360–400 → 39
+   зали 320–360 → 40
+   зали 360–400 → 40
    зали 400–440 → 40
    зали 440–480 → 40
    зали 480–520 → 40
    зали 520–560 → 40
    зали 560–600 → 40
-   зали 600–630 → 30
-   намерени: 624
-общо събития: 300 · с разпозната зала: 299
+   зали 600–614 → 14
+   намерени: 612
+общо събития: 300 · с разпозната зала: 298
 големи (1000+ души): 8
-   2026-09-24 20:00 → 23:45 · Kaufleuten Terrasse · Sundown - Terrasse Closing
-   2026-09-24 22:00 → 04:00 · Kaufleuten Club · PRE-SEMESTER OPENING by Student.ZH
    2026-09-25 18:30 → 20:30 · Volkshaus Zürich · Künstliche Intelligenz und soziale
-   2026-09-25 19:00 → 22:00 · Volkshaus Zürich | Weisser Saal · Acla da Fans und Stefan Wolters - 
+   2026-09-25 19:00 → 22:00 · Volkshaus Zürich · Acla da Fans und Stefan Wolters - 
    2026-09-25 20:00 → 23:45 · Kaufleuten Terrasse · Afterglow - Terrasse Closing
    2026-09-25 21:00 → 22:30 · x-tra Musikcafé · MAR.DI - Coco Limón Plattentaufe
    2026-09-25 22:00 → 04:00 · Kaufleuten Club · Disco Party
    2026-09-25 22:00 → 04:00 · Kaufleuten Club · SEMESTER OPENING PARTY BY STUDENT.
-записан data/events.json: 83603 байта
+   2026-09-26 19:00 → ? · Komplex 457 · Josiah Queen + Support
+   2026-09-26 19:30 → 21:30 · Tonhalle Zürich · Von der Romantik zum Aufbruch - Sc
+записан data/events.json: 83263 байта
