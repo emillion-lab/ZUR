@@ -1,13 +1,21 @@
 тегля пристигащи: Zürich HB
+  пропуснато: Zürich HB — HTTP Error 500: Internal Server Error
 тегля пристигащи: Zürich Oerlikon
+  пропуснато: Zürich Oerlikon — HTTP Error 500: Internal Server Error
 тегля пристигащи: Zürich Stadelhofen
 тегля пристигащи: Zürich Flughafen
 тегля пристигащи: Zürich, Bahnhofquai/HB
+  пропуснато: Zürich, Bahnhofquai/HB — <urlopen error timed out>
 тегля пристигащи: Zürich, Central
+  пропуснато: Zürich, Central — The read operation timed out
 тегля пристигащи: Zürich, Bellevue
+  пропуснато: Zürich, Bellevue — <urlopen error _ssl.c:999: The handshake operation timed out>
 тегля пристигащи: Zürich, Paradeplatz
+  пропуснато: Zürich, Paradeplatz — The read operation timed out
 тегля пристигащи: Zürich, Stauffacher
+  пропуснато: Zürich, Stauffacher — <urlopen error timed out>
 тегля пристигащи: Zürich, Bahnhof Enge
+  пропуснато: Zürich, Bahnhof Enge — The read operation timed out
 тегля пристигащи: Zürich, Carparkplatz Sihlquai
-общо пристигащи: 89 · влак 40 · трамвай 40 · автобус 9 · международни 0
-записан data/transport.json: 10234 байта
+общо пристигащи: 36 · влак 36 · трамвай 0 · автобус 0 · международни 0
+записан data/transport.json: 4120 байта
