@@ -340,9 +340,10 @@ function buildNext90(){
 }
 
 // ═══════════════════════════════════════════════
-const map = L.map('map', {center:[47.3900,8.5417], zoom:12, zoomControl:true, attributionControl:false});
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  maxZoom:19, subdomains:['a','b','c','d']
+const map = L.map('map', {center:[47.3900,8.5417], zoom:12, zoomControl:true, attributionControl:true});
+// CARTO спря безплатните плочки (28.08.2026) -> OSM като в BAK
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:19, attribution:'&copy; OpenStreetMap'
 }).addTo(map);
 document.getElementById('map').style.filter='brightness(0.85) saturate(0.6)';
 setTimeout(()=>map.invalidateSize(), 300);
