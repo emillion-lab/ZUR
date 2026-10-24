@@ -1,9 +1,9 @@
 тегля събитията…
-   страница 1 → 1000 от 2565
-   страница 2 → 1000 от 2565
-   страница 3 → 565 от 2565
-   общо изтеглени: 2565
-тегля 770 зали по идентификатор…
+   страница 1 → 1000 от 2632
+   страница 2 → 1000 от 2632
+   страница 3 → 632 от 2632
+   общо изтеглени: 2632
+тегля 782 зали по идентификатор…
    зали 0–40 → 40
    зали 40–80 → 40
    зали 80–120 → 40
@@ -21,18 +21,18 @@
    зали 560–600 → 40
    зали 600–640 → 40
    зали 640–680 → 40
-   зали 680–720 → 39
+   зали 680–720 → 40
    зали 720–760 → 40
-   зали 760–770 → 10
-   намерени: 769
+   зали 760–782 → 22
+   намерени: 782
 общо събития: 300 · с разпозната зала: 300
 големи (1000+ души): 8
-   2026-10-23 09:00 → 18:00 · Volkshaus Zürich · Late-Bird: Reporter:innen Forum 20
-   2026-10-23 19:30 → ? · Tonhalle Zürich · Zwischen Himmel und Erde
-   2026-10-23 20:00 → 22:00 · Volkshaus Zürich · Vivaldi - Die vier Jahreszeiten
-   2026-10-23 20:00 → 22:00 · Volkshaus Zürich · VIVALDI - DIE VIER JAHRESZEITEN
-   2026-10-23 23:00 → 04:00 · Kaufleuten Club · Made In The 90s
    2026-10-24 18:30 → ? · Tonhalle Zürich · Mozart 1788 – Kristian Bezuidenhou
-   2026-10-24 20:00 → ? · Hallenstadion · Red Bull Dance Your Style World Fi
    2026-10-24 20:00 → 21:30 · Volkshaus Zürich · YASMIN LEVY IN ZÜRICH
-записан data/events.json: 85542 байта
+   2026-10-24 20:00 → ? · Hallenstadion · Red Bull Dance Your Style World Fi
+   2026-10-24 21:00 → 03:00 · x-tra Musikcafé · Nirvana - Grunge & Alternative Roc
+   2026-10-24 22:00 → 04:00 · Kaufleuten Club · Disco Party
+   2026-10-24 23:00 → 04:00 · Komplex 457 · LEGACY Comeback - biggest Trap & R
+   2026-10-25 11:15 → ? · Tonhalle Zürich · Literatur und Musik: Choderlos de 
+   2026-10-25 16:00 → 18:00 · Yonex Badmintonhalle · ZFG Sunday Smashes -Social Badmint
+записан data/events.json: 85630 байта
